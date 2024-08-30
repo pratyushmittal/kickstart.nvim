@@ -970,6 +970,26 @@ require('lazy').setup({
   -- create file on :e
   'jessarcher/vim-heritage',
 
+  -- avante for AI
+  {
+    'yetone/avante.nvim',
+    event = 'VeryLazy',
+    opts = {},
+    dependencies = {
+      'stevearc/dressing.nvim',
+      'nvim-lua/plenary.nvim',
+      'MunifTanjim/nui.nvim',
+      {
+        -- Make sure to setup it properly if you have lazy=true
+        'MeanderingProgrammer/render-markdown.nvim',
+        opts = {
+          file_types = { 'markdown', 'Avante' },
+        },
+        ft = { 'markdown', 'Avante' },
+      },
+    },
+  },
+
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
   -- require 'kickstart.plugins.autopairs',
