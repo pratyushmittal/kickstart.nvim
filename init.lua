@@ -974,7 +974,12 @@ require('lazy').setup({
   {
     'yetone/avante.nvim',
     event = 'VeryLazy',
-    opts = {},
+    opts = {
+      silent_warning = true,
+      skip_warning = true,
+      support_paste_image = false,
+      paste_image = false,
+    },
     dependencies = {
       'stevearc/dressing.nvim',
       'nvim-lua/plenary.nvim',
