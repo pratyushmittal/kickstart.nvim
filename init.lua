@@ -17,14 +17,6 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- -- Intro to Lazy
--- require('lazy').setup {
---   'loctvl842/monokai-pro.nvim',
--- }
---
--- require('monokai-pro').setup { filter = 'spectrum' }
--- vim.cmd.colorscheme 'monokai-pro'
-
 -- Use Lazy
 -- Setup lazy.nvim
 require('lazy').setup {
@@ -57,7 +49,7 @@ require('lazy').setup {
   },
   -- show current method or class name when scrolling
   -- https://github.com/nvim-treesitter/nvim-treesitter-context
-  { 'nvim-treesitter/nvim-treesitter-context', opts = { max_lines = 1 } },
+  { 'nvim-treesitter/nvim-treesitter-context', opts = { max_lines = 2 } },
   -- LSP for linting, definition, references, symbols
   {
     'neovim/nvim-lspconfig',
@@ -68,11 +60,25 @@ require('lazy').setup {
     },
     config = function()
       local lspconfig = require 'lspconfig'
-      lspconfig.pyright.setup {}
 
-      local capabilities = vim.lsp.protocol.make_client_capabilities()
-      -- local capabilities = require('cmp_nvim_lsp').default_capabilities()
+      -- local capabilities = vim.lsp.protocol.make_client_capabilities()
+      local capabilities = require('cmp_nvim_lsp').default_capabilities()
       lspconfig.ruff.setup { capabilities = capabilities }
+      lspconfig.pyright.setup {
+        capabilities = capabilities,
+        settings = {
+          pyright = {
+            -- Using Ruff's import organizer
+            disableOrganizeImports = true,
+          },
+          python = {
+            analysis = {
+              -- Ignore all files for analysis to exclusively use Ruff for linting
+              ignore = { '*' },
+            },
+          },
+        },
+      }
       lspconfig.cssls.setup { capabilities = capabilities }
       lspconfig.emmet_language_server.setup { capabilities = capabilities }
       lspconfig.lua_ls.setup {
@@ -258,6 +264,7 @@ require('lazy').setup {
   {
     'yetone/avante.nvim',
     event = 'VeryLazy',
+    build = 'make',
     opts = {
       silent_warning = true,
       skip_warning = true,
@@ -278,22 +285,50 @@ require('lazy').setup {
       },
     },
   },
-  --
-  -- plugins can be:
-  -- 'repo/name',
-  -- {'repo/name', opts = {}}
-  -- {'repo/name', config = function ()}
-  -- Use `opts = {}` to force a plugin to be loaded.
-  -- passing opts is equal to: require('gitsigns').setup({ ... })
-  --
-  -- Use `config =` to run commands and other things after loading
+  -- Status line
+  {
+    'nvim-lualine/lualine.nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    opts = {
+      theme = 'monokai-pro',
+    },
+  },
+  -- floating terminal
+  {
+    'akinsho/toggleterm.nvim',
+    version = '*',
+    opts = {
+      size = 20,
+      open_mapping = [[<leader>\]],
+      hide_numbers = true,
+      shade_filetypes = {},
+      shade_terminals = true,
+      shading_factor = 2,
+      start_in_insert = true,
+      insert_mappings = true,
+      persist_size = true,
+      direction = 'float',
+      close_on_exit = true,
+      shell = vim.o.shell,
+      float_opts = {
+        border = 'curved',
+        winblend = 0,
+        highlights = {
+          border = 'Normal',
+          background = 'Normal',
+        },
+      },
+    },
+  },
 }
 
 -- VIM OPTIONS
 -- we can see all options using `:help option-list`
 -- Make line numbers default
 vim.opt.number = true
-vim.opt.relativenumber = false
+
+-- hide mode as already shown in lualine
+vim.opt.showmode = false
 
 -- Sync clipboard between OS and Neovim.
 --  Schedule the setting after `UiEnter` because it can increase startup-time.
@@ -311,9 +346,9 @@ vim.opt.smartcase = true
 -- Decrease the auto-save time
 vim.opt.updatetime = 250
 
--- -- Decrease mapped sequence wait time
--- -- Displays which-key popup sooner
--- vim.opt.timeoutlen = 300
+-- Decrease mapped sequence wait time
+-- Displays which-key popup sooner
+vim.opt.timeoutlen = 300
 
 -- Configure how new splits should be opened
 -- :vsplit should open split on right
@@ -335,8 +370,9 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 3
 
--- use indents for fold
-vim.opt.foldmethod = 'indent'
+-- Use treesitter for folding
+vim.opt.foldmethod = 'expr'
+vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
 vim.opt.foldlevelstart = 99
 
 -- KEY BINDINGS
@@ -426,5 +462,5 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
--- The line beneath this is called `modeline`. See `:help modeline`
--- vim: ts=2 sts=2 sw=2 et
+-- -- The line beneath this is called `modeline`. See `:help modeline`
+-- -- vim: ts=2 sts=2 sw=2 et
