@@ -231,6 +231,12 @@ require('lazy').setup {
           rust = { 'rustfmt', lsp_format = 'fallback' },
           -- Conform will run the first available formatter
           javascript = { 'prettierd', 'prettier', stop_after_first = true },
+          htmldjango = { 'djlint' },
+        },
+        formatters = {
+          djlint = {
+            prepend_args = { '--indent', '2', '--max-blank-lines', '2', '--profile', 'django' },
+          },
         },
         -- enable format on save
         format_on_save = {
@@ -291,6 +297,12 @@ require('lazy').setup {
     dependencies = { 'nvim-tree/nvim-web-devicons' },
     opts = {
       theme = 'monokai-pro',
+      sections = {
+        -- https://github.com/nvim-lualine/lualine.nvim?tab=readme-ov-file#filename-component-options
+        lualine_b = { { 'filename', path = 1 } },
+        lualine_c = { 'diff', 'diagnostics' },
+        lualine_x = { 'filetype' },
+      },
     },
   },
   -- floating terminal
