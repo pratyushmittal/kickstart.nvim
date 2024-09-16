@@ -239,11 +239,17 @@ require('lazy').setup {
           },
         },
         -- enable format on save
-        format_on_save = {
-          -- These options will be passed to conform.format()
-          timeout_ms = 500,
-          lsp_format = 'fallback',
-        },
+        format_on_save = function(bufnr)
+          -- Disable with a global or buffer-local variable
+          if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+            return
+          end
+          return {
+            -- These options will be passed to conform.format()
+            timeout_ms = 500,
+            lsp_format = 'fallback',
+          }
+        end,
       }
     end,
   },
@@ -428,6 +434,9 @@ vim.keymap.set('n', '-', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
 -- telescope keymaps `:help telescope.builtin`
+-- Most important Telescope keymapping is <C-leader>
+-- This allows you to filter existing results
+-- We can use !foo to exclude results without foo (negative search)
 local builtin = require 'telescope.builtin'
 vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
 vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
@@ -472,6 +481,25 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   callback = function()
     vim.highlight.on_yank()
   end,
+})
+
+-- Add commands to disable and enable Conform if needed
+vim.api.nvim_create_user_command('ConformDisable', function(args)
+  if args.bang then
+    vim.b.disable_autoformat = true
+  else
+    vim.g.disable_autoformat = true
+  end
+end, {
+  desc = 'Disable autoformat-on-save',
+  bang = true,
+})
+
+vim.api.nvim_create_user_command('ConformEnable', function()
+  vim.b.disable_autoformat = false
+  vim.g.disable_autoformat = false
+end, {
+  desc = 'Re-enable autoformat-on-save',
 })
 
 -- -- The line beneath this is called `modeline`. See `:help modeline`
