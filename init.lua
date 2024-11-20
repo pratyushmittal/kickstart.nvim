@@ -21,14 +21,13 @@ vim.opt.rtp:prepend(lazypath)
 -- Setup lazy.nvim
 require('lazy').setup {
   -- color theme
-  -- https://github.com/loctvl842/monokai-pro.nvim
   {
-    'loctvl842/monokai-pro.nvim',
+    'folke/tokyonight.nvim',
     lazy = false,
     priority = 1000,
-    opts = { filter = 'spectrum' },
+    opts = { style = 'night' },
     init = function()
-      vim.cmd.colorscheme 'monokai-pro'
+      vim.cmd.colorscheme 'tokyonight'
     end,
   },
   {
@@ -45,6 +44,14 @@ require('lazy').setup {
       indent = { enable = true },
       -- RRethy/nvim-treesitter-endwise extension
       endwise = { enable = true },
+      -- incremental selection
+      incremental_selection = {
+        enable = true,
+        keymaps = {
+          node_incremental = 'v',
+          node_decremental = 'V',
+        },
+      },
     },
   },
   -- show current method or class name when scrolling
@@ -260,6 +267,8 @@ require('lazy').setup {
     opts = {
       -- Document existing key chains
       spec = {
+        { '<leader>a', group = '[A]I' },
+        { '<leader>b', group = '[B]uffer' },
         { '<leader>c', group = '[C]ode', mode = { 'n', 'x' } },
         { '<leader>d', group = '[D]ocument' },
         { '<leader>r', group = '[R]ename' },
@@ -272,6 +281,8 @@ require('lazy').setup {
   },
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
+  -- better dialogs
+  { 'stevearc/dressing.nvim', opts = {} },
   -- avante for AI
   {
     'yetone/avante.nvim',
@@ -302,7 +313,7 @@ require('lazy').setup {
     'nvim-lualine/lualine.nvim',
     dependencies = { 'nvim-tree/nvim-web-devicons' },
     opts = {
-      theme = 'monokai-pro',
+      theme = 'tokyonight',
       sections = {
         -- https://github.com/nvim-lualine/lualine.nvim?tab=readme-ov-file#filename-component-options
         lualine_b = { { 'filename', path = 1 } },
@@ -338,6 +349,12 @@ require('lazy').setup {
       },
     },
   },
+  -- color picker
+  { 'uga-rosa/ccc.nvim', opts = {} },
+  -- disable LSP and treesitter for big files over 2mb
+  'LunarVim/bigfile.nvim',
+  -- retain layout on :bd
+  'famiu/bufdelete.nvim',
 }
 
 -- VIM OPTIONS
@@ -393,9 +410,17 @@ vim.opt.foldmethod = 'expr'
 vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
 vim.opt.foldlevelstart = 99
 
+-- enable true colors for ccc.nvim
+vim.opt.termguicolors = true
+
 -- KEY BINDINGS
 -- Clear highlights on search when pressing <Esc> in normal mode
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+
+-- Clear highlights on search when pressing <Esc> in normal mode
+vim.keymap.set('n', '<leader>bp', ':bp<CR>', { desc = '[B]uffer [P]revious' })
+vim.keymap.set('n', '<leader>bn', ':bn<CR>', { desc = '[B]uffer [N]ext' })
+vim.keymap.set('n', '<leader>bd', ':Bdelete<CR>', { desc = '[B]uffer [D]elete' })
 
 -- LSP keymaps
 vim.api.nvim_create_autocmd('LspAttach', {
@@ -438,6 +463,7 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 -- This allows you to filter existing results
 -- We can use !foo to exclude results without foo (negative search)
 local builtin = require 'telescope.builtin'
+vim.keymap.set('n', '<leader>sc', builtin.git_status, { desc = '[S]earch [C]hanges' })
 vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
 vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
 vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
