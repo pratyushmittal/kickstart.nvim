@@ -86,6 +86,22 @@ require('lazy').setup {
           },
         },
       }
+      lspconfig.rust_analyzer.setup {
+        capabilities = capabilities,
+        settings = {
+          ['rust-analyzer'] = {
+            procMacro = {
+              ignored = {
+                leptos_macro = {
+                  -- optional: --
+                  -- "component",
+                  'server',
+                },
+              },
+            },
+          },
+        },
+      }
       lspconfig.cssls.setup { capabilities = capabilities }
       lspconfig.emmet_language_server.setup { capabilities = capabilities }
       lspconfig.lua_ls.setup {
@@ -239,6 +255,7 @@ require('lazy').setup {
           -- Conform will run the first available formatter
           javascript = { 'prettierd', 'prettier', stop_after_first = true },
           htmldjango = { 'djlint' },
+          python = { 'ruff_fix', 'ruff_organize_imports', 'ruff_format' },
         },
         formatters = {
           djlint = {
@@ -355,6 +372,8 @@ require('lazy').setup {
   'LunarVim/bigfile.nvim',
   -- retain layout on :bd
   'famiu/bufdelete.nvim',
+  -- jumping cursor animation
+  { 'sphamba/smear-cursor.nvim', opts = {} },
 }
 
 -- VIM OPTIONS
