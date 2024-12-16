@@ -63,7 +63,10 @@ require('lazy').setup {
     dependencies = {
       -- check all available LSPs using `:Mason`
       { 'williamboman/mason.nvim', opts = {} },
-      'williamboman/mason-lspconfig.nvim',
+      {
+        'williamboman/mason-lspconfig.nvim',
+        opts = { ensure_installed = { 'denols', 'cssls', 'rust_analyzer', 'emmet_language_server', 'lua_ls', 'ruff', 'pyright' } },
+      },
     },
     config = function()
       local lspconfig = require 'lspconfig'
@@ -103,6 +106,10 @@ require('lazy').setup {
         },
       }
       lspconfig.cssls.setup { capabilities = capabilities }
+      lspconfig.denols.setup {
+        capabilities = capabilities,
+        root_dir = lspconfig.util.root_pattern('deno.json', 'deno.jsonc'),
+      }
       lspconfig.emmet_language_server.setup { capabilities = capabilities }
       lspconfig.lua_ls.setup {
         capabilities = capabilities,
@@ -251,9 +258,10 @@ require('lazy').setup {
           -- we need to install these using :MasonInstall
           lua = { 'stylua' },
           -- You can customize some of the format options for the filetype (:help conform.format)
-          rust = { 'rustfmt', lsp_format = 'fallback' },
+          -- rust = { 'rust-analyzer', lsp_format = 'fallback' },
           -- Conform will run the first available formatter
-          javascript = { 'prettierd', 'prettier', stop_after_first = true },
+          -- javascript = { 'prettierd', 'prettier', stop_after_first = true },
+          -- javascript = { 'standardjs' },
           htmldjango = { 'djlint' },
           python = { 'ruff_fix', 'ruff_organize_imports', 'ruff_format' },
         },
@@ -475,7 +483,14 @@ vim.keymap.set('n', 'gf', ':edit <cfile><cr>', { desc = '[g]oto [f]ile' })
 vim.keymap.set('n', '-', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
 
 -- Diagnostic keymaps
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+vim.keymap.set('n', '<leader>q', function()
+  local win = vim.fn.getloclist(0, { winid = 0 })
+  if win.winid == 0 then
+    vim.diagnostic.setloclist()
+  else
+    vim.cmd.lclose()
+  end
+end, { desc = 'Toggle diagnostic [Q]uickfix list' })
 
 -- telescope keymaps `:help telescope.builtin`
 -- Most important Telescope keymapping is <C-leader>
@@ -511,9 +526,17 @@ vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right win
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
-vim.keymap.set({ 'n', 'v' }, '<leader>f', function()
-  require('conform').format { async = true, lsp_format = 'fallback' }
-end, { desc = '[F]ormat buffer' })
+-- Toggle between equal window sizes and full-width
+local window_state = 'equal'
+vim.keymap.set('n', '<leader>f', function()
+  if window_state == 'equal' then
+    vim.cmd 'wincmd |' -- Make window full-width
+    window_state = 'full'
+  else
+    vim.cmd 'wincmd =' -- Make windows equal size
+    window_state = 'equal'
+  end
+end, { desc = 'Toggle [F]ull Screen' })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
