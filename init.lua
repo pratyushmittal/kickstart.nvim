@@ -65,7 +65,7 @@ require('lazy').setup {
       { 'williamboman/mason.nvim', opts = {} },
       {
         'williamboman/mason-lspconfig.nvim',
-        opts = { ensure_installed = { 'denols', 'cssls', 'rust_analyzer', 'emmet_language_server', 'lua_ls', 'ruff', 'pyright' } },
+        opts = { ensure_installed = { 'biome', 'cssls', 'rust_analyzer', 'emmet_language_server', 'lua_ls', 'ruff', 'pyright', 'yamlls', 'astro' } },
       },
     },
     config = function()
@@ -105,12 +105,19 @@ require('lazy').setup {
           },
         },
       }
-      lspconfig.cssls.setup { capabilities = capabilities }
-      lspconfig.denols.setup {
+      lspconfig.cssls.setup {
         capabilities = capabilities,
-        root_dir = lspconfig.util.root_pattern('deno.json', 'deno.jsonc'),
+        settings = {
+          -- we can check all properties by doing :Mason, select tool, "LSP server configuration schema"
+          css = {
+            lint = { duplicateProperties = 'warning' },
+          },
+        },
       }
+      lspconfig.yamlls.setup { capabilities = capabilities }
+      lspconfig.biome.setup { capabilities = capabilities }
       lspconfig.emmet_language_server.setup { capabilities = capabilities }
+      lspconfig.astro.setup { capabilities = capabilities }
       lspconfig.lua_ls.setup {
         capabilities = capabilities,
         settings = {
@@ -230,11 +237,13 @@ require('lazy').setup {
     },
   },
   -- auto pair brackets and quotes
-  { 'windwp/nvim-autopairs', event = 'InsertEnter', opts = {} },
+  { 'windwp/nvim-autopairs', event = 'InsertEnter', opts = { check_ts = true } },
   -- add quotes around selected text
   { 'echasnovski/mini.surround', version = false, opts = {} },
   -- auto close functions
   'RRethy/nvim-treesitter-endwise',
+  -- auto close tags in html
+  { 'windwp/nvim-ts-autotag', opts = {} },
   -- multi cursor
   'mg979/vim-visual-multi',
   -- create file on :e
@@ -256,12 +265,11 @@ require('lazy').setup {
       require('conform').setup {
         formatters_by_ft = {
           -- we need to install these using :MasonInstall
+          -- we have fallback for lsp below. Hence need these only when the lsp doesn't do formatting
           lua = { 'stylua' },
-          -- You can customize some of the format options for the filetype (:help conform.format)
-          -- rust = { 'rust-analyzer', lsp_format = 'fallback' },
           -- Conform will run the first available formatter
-          -- javascript = { 'prettierd', 'prettier', stop_after_first = true },
-          -- javascript = { 'standardjs' },
+          html = { 'prettierd', 'prettier', stop_after_first = true },
+          css = { 'prettierd', 'prettier', stop_after_first = true },
           htmldjango = { 'djlint' },
           python = { 'ruff_fix', 'ruff_organize_imports', 'ruff_format' },
         },
@@ -377,11 +385,25 @@ require('lazy').setup {
   -- color picker
   { 'uga-rosa/ccc.nvim', opts = {} },
   -- disable LSP and treesitter for big files over 2mb
-  'LunarVim/bigfile.nvim',
+  { 'LunarVim/bigfile.nvim', opts = {} },
   -- retain layout on :bd
   'famiu/bufdelete.nvim',
   -- jumping cursor animation
   { 'sphamba/smear-cursor.nvim', opts = {} },
+  -- run tests
+  'vim-test/vim-test',
+  -- run code repl
+  {
+    'michaelb/sniprun',
+    branch = 'master',
+    build = 'sh install.sh',
+    -- do 'sh install.sh 1' if you want to force compile locally
+    -- (instead of fetching a binary from the github release). Requires Rust >= 1.65
+    opts = {},
+  },
+  -- search and execute commands
+  { 'doctorfree/cheatsheet.nvim', opts = {} },
+  { 'nvzone/typr', cmd = 'TyprStats', dependencies = 'nvzone/volt', opts = {} },
 }
 
 -- VIM OPTIONS
@@ -444,10 +466,18 @@ vim.opt.termguicolors = true
 -- Clear highlights on search when pressing <Esc> in normal mode
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
--- Clear highlights on search when pressing <Esc> in normal mode
+-- changing buffers
 vim.keymap.set('n', '<leader>bp', ':bp<CR>', { desc = '[B]uffer [P]revious' })
 vim.keymap.set('n', '<leader>bn', ':bn<CR>', { desc = '[B]uffer [N]ext' })
 vim.keymap.set('n', '<leader>bd', ':Bdelete<CR>', { desc = '[B]uffer [D]elete' })
+
+-- run tests easily
+vim.keymap.set('n', '<leader>t', ':TestNearest<CR>', { desc = '[T]est nearest' })
+vim.g['test#python#djangotest#options'] = '--keepdb --settings=$DJANGO_TEST_SETTINGS'
+
+-- run replt
+vim.api.nvim_set_keymap('v', '<leader>x', '<Plug>SnipRun', { silent = true })
+vim.api.nvim_set_keymap('n', '<leader>x', '<Plug>SnipRun', { silent = true })
 
 -- LSP keymaps
 vim.api.nvim_create_autocmd('LspAttach', {
