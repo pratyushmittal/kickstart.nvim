@@ -22,12 +22,14 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup {
   -- color theme
   {
-    'folke/tokyonight.nvim',
+    'kepano/flexoki-neovim',
+    name = 'flexoki',
+    -- 'folke/tokyonight.nvim',
     lazy = false,
     priority = 1000,
     opts = { style = 'night' },
     init = function()
-      vim.cmd.colorscheme 'tokyonight'
+      vim.cmd.colorscheme 'flexoki-dark'
     end,
   },
   {
@@ -65,7 +67,20 @@ require('lazy').setup {
       { 'williamboman/mason.nvim', opts = {} },
       {
         'williamboman/mason-lspconfig.nvim',
-        opts = { ensure_installed = { 'biome', 'cssls', 'rust_analyzer', 'emmet_language_server', 'lua_ls', 'ruff', 'pyright', 'yamlls', 'astro' } },
+        opts = {
+          ensure_installed = {
+            'biome',
+            'cssls',
+            'rust_analyzer',
+            'emmet_language_server',
+            'lua_ls',
+            'ruff',
+            'pyright',
+            'yamlls',
+            'astro',
+            'docker_compose_language_service',
+          },
+        },
       },
     },
     config = function()
@@ -126,6 +141,7 @@ require('lazy').setup {
           },
         },
       }
+      lspconfig.docker_compose_language_service.setup { capabilities = capabilities }
     end,
   },
   -- highlight current word using LSP, tree-sitter
@@ -169,6 +185,12 @@ require('lazy').setup {
           { name = 'luasnip' },
           { name = 'nvim_lsp' },
           { name = 'nvim_lsp_signature_help' },
+        },
+        window = {
+          completion = cmp.config.window.bordered {
+            winhighlight = 'Normal:Normal,FloatBorder:Normal,CursorLine:Visual,Search:None',
+            winblend = 0, -- Make completion window opaque
+          },
         },
         -- `:help ins-completion`
         mapping = cmp.mapping.preset.insert {
@@ -316,29 +338,22 @@ require('lazy').setup {
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
   -- better dialogs
   { 'stevearc/dressing.nvim', opts = {} },
-  -- avante for AI
+  -- codecompanion for ai
   {
-    'yetone/avante.nvim',
-    event = 'VeryLazy',
-    build = 'make',
+    'olimorris/codecompanion.nvim',
     opts = {
-      silent_warning = true,
-      skip_warning = true,
-      support_paste_image = false,
-      paste_image = false,
+      strategies = {
+        chat = {
+          adapter = 'openai',
+        },
+        inline = {
+          adapter = 'openai',
+        },
+      },
     },
     dependencies = {
-      'stevearc/dressing.nvim',
       'nvim-lua/plenary.nvim',
-      'MunifTanjim/nui.nvim',
-      {
-        -- Make sure to setup it properly if you have lazy=true
-        'MeanderingProgrammer/render-markdown.nvim',
-        opts = {
-          file_types = { 'markdown', 'Avante' },
-        },
-        ft = { 'markdown', 'Avante' },
-      },
+      'nvim-treesitter/nvim-treesitter',
     },
   },
   -- Status line
@@ -470,6 +485,14 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 vim.keymap.set('n', '<leader>bp', ':bp<CR>', { desc = '[B]uffer [P]revious' })
 vim.keymap.set('n', '<leader>bn', ':bn<CR>', { desc = '[B]uffer [N]ext' })
 vim.keymap.set('n', '<leader>bd', ':Bdelete<CR>', { desc = '[B]uffer [D]elete' })
+
+-- ai codecompanion
+vim.keymap.set({ 'n', 'v' }, '<leader>aa', '<cmd>CodeCompanionActions<cr>', { noremap = true, silent = true, desc = '[A]ctions' })
+vim.keymap.set({ 'n', 'v' }, '<leader>at', '<cmd>CodeCompanionChat Toggle<cr>', { noremap = true, silent = true, desc = '[T]oggle' })
+vim.keymap.set({ 'n', 'v' }, '<leader>ae', ":'<,'>CodeCompanion #buffer ", { noremap = true, silent = true, desc = '[E]dit' })
+
+-- Expand 'cc' into 'CodeCompanion' in the command line
+vim.cmd [[cab cc CodeCompanion]]
 
 -- run tests easily
 vim.keymap.set('n', '<leader>t', ':TestNearest<CR>', { desc = '[T]est nearest' })
