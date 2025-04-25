@@ -21,17 +21,9 @@ vim.opt.rtp:prepend(lazypath)
 -- Setup lazy.nvim
 require('lazy').setup {
   -- color theme
-  {
-    'kepano/flexoki-neovim',
-    name = 'flexoki',
-    -- 'folke/tokyonight.nvim',
-    lazy = false,
-    priority = 1000,
-    opts = { style = 'night' },
-    init = function()
-      vim.cmd.colorscheme 'flexoki-dark'
-    end,
-  },
+  "rebelot/kanagawa.nvim",
+  'folke/tokyonight.nvim',
+  { 'catppuccin/nvim',                         name = 'catppuccin',     priority = 1000 },
   {
     -- syntax highlighting
     -- https://github.com/nvim-treesitter/nvim-treesitter
@@ -88,9 +80,10 @@ require('lazy').setup {
 
       -- local capabilities = vim.lsp.protocol.make_client_capabilities()
       local capabilities = require('cmp_nvim_lsp').default_capabilities()
-      lspconfig.ruff.setup { capabilities = capabilities }
+      lspconfig.ruff.setup { capabilities = capabilities, offset_encoding = 'utf-8' }
       lspconfig.pyright.setup {
         capabilities = capabilities,
+        offset_encoding = 'utf-8',
         settings = {
           pyright = {
             -- Using Ruff's import organizer
@@ -259,13 +252,13 @@ require('lazy').setup {
     },
   },
   -- auto pair brackets and quotes
-  { 'windwp/nvim-autopairs', event = 'InsertEnter', opts = { check_ts = true } },
+  { 'windwp/nvim-autopairs',     event = 'InsertEnter', opts = { check_ts = true } },
   -- add quotes around selected text
-  { 'echasnovski/mini.surround', version = false, opts = {} },
+  { 'echasnovski/mini.surround', version = false,       opts = {} },
   -- auto close functions
   'RRethy/nvim-treesitter-endwise',
   -- auto close tags in html
-  { 'windwp/nvim-ts-autotag', opts = {} },
+  { 'windwp/nvim-ts-autotag',              opts = {} },
   -- multi cursor
   'mg979/vim-visual-multi',
   -- create file on :e
@@ -291,12 +284,14 @@ require('lazy').setup {
           lua = { 'stylua' },
           -- Conform will run the first available formatter
           html = { 'prettierd', 'prettier', stop_after_first = true },
-          css = { 'prettierd', 'prettier', stop_after_first = true },
+          css = { 'biome', 'prettier', stop_after_first = true },
           htmldjango = { 'djlint' },
           python = { 'ruff_fix', 'ruff_organize_imports', 'ruff_format' },
         },
         formatters = {
           djlint = {
+            -- requires running djlint once from terminal to prevent timeout
+            -- use <c-/> to open terminal
             prepend_args = { '--indent', '2', '--max-blank-lines', '2', '--profile', 'django' },
           },
         },
@@ -324,12 +319,11 @@ require('lazy').setup {
       spec = {
         { '<leader>a', group = '[A]I' },
         { '<leader>b', group = '[B]uffer' },
-        { '<leader>c', group = '[C]ode', mode = { 'n', 'x' } },
+        { '<leader>c', group = '[C]ode',     mode = { 'n', 'x' } },
         { '<leader>d', group = '[D]ocument' },
         { '<leader>r', group = '[R]ename' },
         { '<leader>s', group = '[S]earch' },
         { '<leader>w', group = '[W]orkspace' },
-        { '<leader>t', group = '[T]oggle' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
       },
     },
@@ -337,16 +331,30 @@ require('lazy').setup {
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
   -- better dialogs
-  { 'stevearc/dressing.nvim', opts = {} },
+  { 'stevearc/dressing.nvim',   opts = {} },
   -- codecompanion for ai
   {
     'olimorris/codecompanion.nvim',
     opts = {
+      adapters = {
+        openai = function()
+          return require('codecompanion.adapters').extend('openai', {
+            schema = {
+              model = {
+                default = 'gpt-4.1-2025-04-14',
+              },
+            },
+          })
+        end,
+      },
       strategies = {
         chat = {
           adapter = 'openai',
         },
         inline = {
+          adapter = 'openai',
+        },
+        cmd = {
           adapter = 'openai',
         },
       },
@@ -361,7 +369,6 @@ require('lazy').setup {
     'nvim-lualine/lualine.nvim',
     dependencies = { 'nvim-tree/nvim-web-devicons' },
     opts = {
-      theme = 'tokyonight',
       sections = {
         -- https://github.com/nvim-lualine/lualine.nvim?tab=readme-ov-file#filename-component-options
         lualine_b = { { 'filename', path = 1 } },
@@ -397,10 +404,8 @@ require('lazy').setup {
       },
     },
   },
-  -- color picker
-  { 'uga-rosa/ccc.nvim', opts = {} },
   -- disable LSP and treesitter for big files over 2mb
-  { 'LunarVim/bigfile.nvim', opts = {} },
+  { 'LunarVim/bigfile.nvim',     opts = {} },
   -- retain layout on :bd
   'famiu/bufdelete.nvim',
   -- jumping cursor animation
@@ -417,12 +422,39 @@ require('lazy').setup {
     opts = {},
   },
   -- search and execute commands
-  { 'doctorfree/cheatsheet.nvim', opts = {} },
-  { 'nvzone/typr', cmd = 'TyprStats', dependencies = 'nvzone/volt', opts = {} },
+  { 'doctorfree/cheatsheet.nvim', opts = { bundled_cheatsheets = { disabled = { 'nerd-fonts' } } } },
+  -- lsp supported code completions in mardown and other embeds
+  { 'jmbuhr/otter.nvim',          opts = {} },
 }
+
+-- configure otter for markdown and codecompanion
+-- https://github.com/olimorris/codecompanion.nvim/discussions/1284
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { 'markdown' },
+  callback = function(args)
+    require("otter").activate()
+    local bufnr = args.buf
+    vim.api.nvim_create_autocmd("BufWritePost", {
+      buffer = bufnr,
+      callback = function()
+        require("otter").activate()
+      end
+    })
+  end
+})
+
+vim.api.nvim_create_autocmd("user", {
+  pattern = 'CodeCompanionRequestFinished',
+  callback = function()
+    require("otter").activate()
+  end
+})
 
 -- VIM OPTIONS
 -- we can see all options using `:help option-list`
+-- set theme
+vim.cmd 'colorscheme kanagawa-dragon'
+
 -- Make line numbers default
 vim.opt.number = true
 
@@ -474,9 +506,6 @@ vim.opt.foldmethod = 'expr'
 vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
 vim.opt.foldlevelstart = 99
 
--- enable true colors for ccc.nvim
-vim.opt.termguicolors = true
-
 -- KEY BINDINGS
 -- Clear highlights on search when pressing <Esc> in normal mode
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
@@ -487,9 +516,12 @@ vim.keymap.set('n', '<leader>bn', ':bn<CR>', { desc = '[B]uffer [N]ext' })
 vim.keymap.set('n', '<leader>bd', ':Bdelete<CR>', { desc = '[B]uffer [D]elete' })
 
 -- ai codecompanion
-vim.keymap.set({ 'n', 'v' }, '<leader>aa', '<cmd>CodeCompanionActions<cr>', { noremap = true, silent = true, desc = '[A]ctions' })
-vim.keymap.set({ 'n', 'v' }, '<leader>at', '<cmd>CodeCompanionChat Toggle<cr>', { noremap = true, silent = true, desc = '[T]oggle' })
-vim.keymap.set({ 'n', 'v' }, '<leader>ae', ":'<,'>CodeCompanion #buffer ", { noremap = true, silent = true, desc = '[E]dit' })
+vim.keymap.set({ 'n', 'v' }, '<leader>aa', '<cmd>CodeCompanionActions<cr>',
+  { noremap = true, silent = true, desc = '[A]ctions' })
+vim.keymap.set({ 'n', 'v' }, '<leader>at', '<cmd>CodeCompanionChat Toggle<cr>',
+  { noremap = true, silent = true, desc = '[T]oggle' })
+vim.keymap.set({ 'n', 'v' }, '<leader>ae', ":'<,'>CodeCompanion #buffer ",
+  { noremap = true, silent = true, desc = '[E]dit' })
 
 -- Expand 'cc' into 'CodeCompanion' in the command line
 vim.cmd [[cab cc CodeCompanion]]
