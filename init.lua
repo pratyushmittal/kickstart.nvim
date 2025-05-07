@@ -25,6 +25,15 @@ require('lazy').setup {
   "rebelot/kanagawa.nvim",
   'folke/tokyonight.nvim',
   { 'catppuccin/nvim',                         name = 'catppuccin',     priority = 1000 },
+  -- auto change to dark mode and light mode
+  { "f-person/auto-dark-mode.nvim", opts = {
+    set_dark_mode = function()
+      vim.cmd 'colorscheme onedark_dark'
+    end,
+    set_light_mode = function()
+      vim.cmd 'colorscheme onelight'
+    end,
+  } },
   {
     -- syntax highlighting
     -- https://github.com/nvim-treesitter/nvim-treesitter
@@ -76,6 +85,7 @@ require('lazy').setup {
     dependencies = {
       -- check all available LSPs using `:Mason`
       { 'williamboman/mason.nvim', opts = {} },
+      "neovim/nvim-lspconfig",
     },
     opts = {
       ensure_installed = {
@@ -381,9 +391,17 @@ require('lazy').setup {
     -- (instead of fetching a binary from the github release). Requires Rust >= 1.65
     opts = {},
   },
+  -- insert log lines automatically
+  {
+    "Goose97/timber.nvim",
+    version = "*", -- Use for stability; omit to use `main` branch for the latest features
+    event = "VeryLazy",
+    opts = {},
+  },
   -- search and execute commands
   { 'doctorfree/cheatsheet.nvim', opts = { bundled_cheatsheets = { disabled = { 'nerd-fonts' } } } },
   -- lsp supported code completions in mardown and other embeds
+  -- need to call :OtterActivate to enable
   { 'jmbuhr/otter.nvim',          opts = {} },
   -- jumping between neighbours
   {
@@ -468,37 +486,46 @@ vim.lsp.config("lua_ls", {
 })
 vim.lsp.config("docker_compose_language_service", { capabilities = capabilities })
 
--- configure otter for markdown and codecompanion
--- https://github.com/olimorris/codecompanion.nvim/discussions/1284
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = { 'markdown' },
-  callback = function(args)
-    require("otter").activate()
-    local bufnr = args.buf
-    vim.api.nvim_create_autocmd("BufWritePost", {
-      buffer = bufnr,
-      callback = function()
-        require("otter").activate()
-      end
-    })
-  end
+
+-- show diagnostic errors inline
+vim.diagnostic.config({
+  -- Use the default configuration
+  virtual_lines = true
+
+  -- Alternatively, customize specific options
+  -- virtual_lines = {
+  --  -- Only show virtual line diagnostics for the current cursor line
+  --  current_line = true,
+  -- },
 })
 
-vim.api.nvim_create_autocmd("user", {
-  pattern = 'CodeCompanionRequestFinished',
-  callback = function()
-    require("otter").activate()
-  end
-})
+-- configure otter for markdown and codecompanion
+-- https://github.com/olimorris/codecompanion.nvim/discussions/1284
+-- vim.api.nvim_create_autocmd("FileType", {
+--   pattern = { '*.md' },
+--   callback = function(args)
+--     require("otter").activate()
+--     local bufnr = args.buf
+--     vim.api.nvim_create_autocmd("BufWritePost", {
+--       buffer = bufnr,
+--       callback = function()
+--         require("otter").activate()
+--       end
+--     })
+--   end
+-- })
+
 
 -- VIM OPTIONS
 -- we can see all options using `:help option-list`
 -- set theme
 vim.opt.termguicolors = true -- enable true colors
+-- vim.cmd 'colorscheme onelight'
 vim.cmd 'colorscheme onedark_dark'
 
 -- Make line numbers default
 vim.opt.number = true
+vim.opt.relativenumber = true
 
 -- hide mode as already shown in lualine
 vim.opt.showmode = false
