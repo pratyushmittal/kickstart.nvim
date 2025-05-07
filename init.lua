@@ -21,6 +21,7 @@ vim.opt.rtp:prepend(lazypath)
 -- Setup lazy.nvim
 require('lazy').setup {
   -- color theme
+  'olimorris/onedarkpro.nvim',
   "rebelot/kanagawa.nvim",
   'folke/tokyonight.nvim',
   { 'catppuccin/nvim',                         name = 'catppuccin',     priority = 1000 },
@@ -31,7 +32,7 @@ require('lazy').setup {
     build = ':TSUpdate',
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'python', 'elixir' },
+      ensure_installed = { 'bash', 'c', 'comment', 'diff', 'html', 'lua', 'luap', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'python', 'elixir' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = { enable = true },
@@ -42,100 +43,54 @@ require('lazy').setup {
       incremental_selection = {
         enable = true,
         keymaps = {
-          node_incremental = 'v',
-          node_decremental = 'V',
+          init_selection = 's',
+          node_incremental = 's',
+          node_decremental = 'S',
+        },
+      },
+      textobjects = {
+        move = {
+          enable = true,
+          set_jumps = true, -- whether to set jumps in the jumplist
+          goto_next_start = {
+            ["]c"] = "@class.outer",
+            -- https://github.com/nvim-treesitter/nvim-treesitter-textobjects?tab=readme-ov-file#built-in-textobjects
+            -- ["]]"] = "@function.outer",
+          },
+          goto_previous_start = {
+            -- ["[["] = "@function.outer",
+            ["[c"] = "@class.outer",
+          },
         },
       },
     },
   },
   -- show current method or class name when scrolling
-  -- https://github.com/nvim-treesitter/nvim-treesitter-context
   { 'nvim-treesitter/nvim-treesitter-context', opts = { max_lines = 2 } },
-  -- LSP for linting, definition, references, symbols
+  -- use mason to install and manage linters, LSPs, DAPs and formatters for vim's LSP
+  -- vim's lsp DOESN'T automatically install these, nor does it provide a way to install these
   {
-    'neovim/nvim-lspconfig',
+    -- mason-lspconfig automatically installs the libraries we mention
+    -- plus it automatically calls vim.lsp.enable() on them
+    'williamboman/mason-lspconfig.nvim',
     dependencies = {
       -- check all available LSPs using `:Mason`
       { 'williamboman/mason.nvim', opts = {} },
-      {
-        'williamboman/mason-lspconfig.nvim',
-        opts = {
-          ensure_installed = {
-            'biome',
-            'cssls',
-            'rust_analyzer',
-            'emmet_language_server',
-            'lua_ls',
-            'ruff',
-            'pyright',
-            'yamlls',
-            'astro',
-            'docker_compose_language_service',
-          },
-        },
-      },
     },
-    config = function()
-      local lspconfig = require 'lspconfig'
-
-      -- local capabilities = vim.lsp.protocol.make_client_capabilities()
-      local capabilities = require('cmp_nvim_lsp').default_capabilities()
-      lspconfig.ruff.setup { capabilities = capabilities, offset_encoding = 'utf-8' }
-      lspconfig.pyright.setup {
-        capabilities = capabilities,
-        offset_encoding = 'utf-8',
-        settings = {
-          pyright = {
-            -- Using Ruff's import organizer
-            disableOrganizeImports = true,
-          },
-          python = {
-            analysis = {
-              -- Ignore all files for analysis to exclusively use Ruff for linting
-              ignore = { '*' },
-            },
-          },
-        },
-      }
-      lspconfig.rust_analyzer.setup {
-        capabilities = capabilities,
-        settings = {
-          ['rust-analyzer'] = {
-            procMacro = {
-              ignored = {
-                leptos_macro = {
-                  -- optional: --
-                  -- "component",
-                  'server',
-                },
-              },
-            },
-          },
-        },
-      }
-      lspconfig.cssls.setup {
-        capabilities = capabilities,
-        settings = {
-          -- we can check all properties by doing :Mason, select tool, "LSP server configuration schema"
-          css = {
-            lint = { duplicateProperties = 'warning' },
-          },
-        },
-      }
-      lspconfig.yamlls.setup { capabilities = capabilities }
-      lspconfig.biome.setup { capabilities = capabilities }
-      lspconfig.emmet_language_server.setup { capabilities = capabilities }
-      lspconfig.astro.setup { capabilities = capabilities }
-      lspconfig.lua_ls.setup {
-        capabilities = capabilities,
-        settings = {
-          Lua = {
-            diagnostics = { globals = { 'vim' } },
-          },
-        },
-      }
-      lspconfig.docker_compose_language_service.setup { capabilities = capabilities }
-    end,
+    opts = {
+      ensure_installed = {
+        'biome',
+        'cssls',
+        'rust_analyzer',
+        'emmet_language_server',
+        'lua_ls',
+        'ruff',
+        'pyright',
+        'yamlls',
+        'astro',
+        'docker_compose_language_service',
+      },
+    }
   },
   -- highlight current word using LSP, tree-sitter
   -- https://github.com/RRethy/vim-illuminate
@@ -175,9 +130,9 @@ require('lazy').setup {
           end,
         },
         sources = {
-          { name = 'luasnip' },
           { name = 'nvim_lsp' },
           { name = 'nvim_lsp_signature_help' },
+          { name = 'luasnip' },
         },
         window = {
           completion = cmp.config.window.bordered {
@@ -257,6 +212,9 @@ require('lazy').setup {
   { 'echasnovski/mini.surround', version = false,       opts = {} },
   -- auto close functions
   'RRethy/nvim-treesitter-endwise',
+  -- configure jumps on [[, ]], ]m, [m - for all languages
+  -- configured via textobjects in treesitter
+  'nvim-treesitter/nvim-treesitter-textobjects',
   -- auto close tags in html
   { 'windwp/nvim-ts-autotag',              opts = {} },
   -- multi cursor
@@ -334,13 +292,15 @@ require('lazy').setup {
   { 'stevearc/dressing.nvim',   opts = {} },
   -- codecompanion for ai
   {
-    'olimorris/codecompanion.nvim',
+    'pratyushmittal/codecompanion.nvim',
+    branch = "diff-update",
     opts = {
       adapters = {
         openai = function()
           return require('codecompanion.adapters').extend('openai', {
             schema = {
               model = {
+                -- default = 'o4-mini-2025-04-16',
                 default = 'gpt-4.1-2025-04-14',
               },
             },
@@ -425,7 +385,88 @@ require('lazy').setup {
   { 'doctorfree/cheatsheet.nvim', opts = { bundled_cheatsheets = { disabled = { 'nerd-fonts' } } } },
   -- lsp supported code completions in mardown and other embeds
   { 'jmbuhr/otter.nvim',          opts = {} },
+  -- jumping between neighbours
+  {
+    'aaronik/treewalker.nvim',
+
+    -- The following options are the defaults.
+    -- Treewalker aims for sane defaults, so these are each individually optional,
+    -- and setup() does not need to be called, so the whole opts block is optional as well.
+    opts = {
+      -- Whether to briefly highlight the node after jumping to it
+      highlight = true,
+
+      -- How long should above highlight last (in ms)
+      highlight_duration = 250,
+
+      -- The color of the above highlight. Must be a valid vim highlight group.
+      -- (see :h highlight-group for options)
+      highlight_group = 'CursorLine',
+    }
+  },
 }
+
+
+-- LSP
+-- LSP for linting, definition, references, symbols
+-- local capabilities = vim.lsp.protocol.make_client_capabilities()
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
+vim.lsp.config('ruff', { capabilities = capabilities, offset_encoding = 'utf-8' })
+vim.lsp.config('pyright', {
+  capabilities = capabilities,
+  offset_encoding = 'utf-8',
+  settings = {
+    pyright = {
+      -- Using Ruff's import organizer
+      disableOrganizeImports = true,
+    },
+    python = {
+      analysis = {
+        -- Ignore all files for analysis to exclusively use Ruff for linting
+        ignore = { '*' },
+      },
+    },
+  },
+})
+vim.lsp.config('rust_analyzer', {
+  capabilities = capabilities,
+  settings = {
+    ['rust-analyzer'] = {
+      procMacro = {
+        ignored = {
+          leptos_macro = {
+            -- optional: --
+            -- "component",
+            'server',
+          },
+        },
+      },
+    },
+  },
+})
+
+vim.lsp.config("cssls", {
+  capabilities = capabilities,
+  settings = {
+    -- we can check all properties by doing :Mason, select tool, "LSP server configuration schema"
+    css = {
+      lint = { duplicateProperties = 'warning' },
+    },
+  },
+})
+vim.lsp.config("yamlls", { capabilities = capabilities })
+vim.lsp.config("biome", { capabilities = capabilities })
+vim.lsp.config("emmet_language_server", { capabilities = capabilities })
+vim.lsp.config("astro", { capabilities = capabilities })
+vim.lsp.config("lua_ls", {
+  capabilities = capabilities,
+  settings = {
+    Lua = {
+      diagnostics = { globals = { 'vim' } },
+    },
+  },
+})
+vim.lsp.config("docker_compose_language_service", { capabilities = capabilities })
 
 -- configure otter for markdown and codecompanion
 -- https://github.com/olimorris/codecompanion.nvim/discussions/1284
@@ -453,7 +494,8 @@ vim.api.nvim_create_autocmd("user", {
 -- VIM OPTIONS
 -- we can see all options using `:help option-list`
 -- set theme
-vim.cmd 'colorscheme kanagawa-dragon'
+vim.opt.termguicolors = true -- enable true colors
+vim.cmd 'colorscheme onedark_dark'
 
 -- Make line numbers default
 vim.opt.number = true
@@ -585,6 +627,7 @@ local builtin = require 'telescope.builtin'
 vim.keymap.set('n', '<leader>sc', builtin.git_status, { desc = '[S]earch [C]hanges' })
 vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
 vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
+vim.keymap.set('n', '<leader>sl', builtin.lsp_dynamic_workspace_symbols, { desc = '[S]earch [L]SP' })
 vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
 vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
 vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
@@ -622,6 +665,19 @@ vim.keymap.set('n', '<leader>f', function()
     window_state = 'equal'
   end
 end, { desc = 'Toggle [F]ull Screen' })
+
+-- treewalker movement
+-- https://github.com/aaronik/treewalker.nvim?tab=readme-ov-file#mapping
+vim.keymap.set({ 'n', 'v' }, '[[', '<cmd>Treewalker Up<cr>', { silent = true })
+vim.keymap.set({ 'n', 'v' }, ']]', '<cmd>Treewalker Down<cr>', { silent = true })
+vim.keymap.set({ 'n', 'v' }, '[a', '<cmd>Treewalker Left<cr>', { silent = true })
+vim.keymap.set({ 'n', 'v' }, ']a', '<cmd>Treewalker Right<cr>', { silent = true })
+
+-- treewalker swapping
+-- vim.keymap.set('n', '{{', '<cmd>Treewalker SwapUp<cr>', { silent = true })
+-- vim.keymap.set('n', '}}', '<cmd>Treewalker SwapDown<cr>', { silent = true })
+-- vim.keymap.set('n', '<C-S-h>', '<cmd>Treewalker SwapLeft<cr>', { silent = true })
+-- vim.keymap.set('n', '<C-S-l>', '<cmd>Treewalker SwapRight<cr>', { silent = true })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
