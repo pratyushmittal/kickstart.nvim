@@ -144,12 +144,6 @@ require('lazy').setup {
           { name = 'nvim_lsp_signature_help' },
           { name = 'luasnip' },
         },
-        window = {
-          completion = cmp.config.window.bordered {
-            winhighlight = 'Normal:Normal,FloatBorder:Normal,CursorLine:Visual,Search:None',
-            winblend = 0, -- Make completion window opaque
-          },
-        },
         -- `:help ins-completion`
         mapping = cmp.mapping.preset.insert {
           ['<C-n>'] = cmp.mapping.select_next_item(),
@@ -521,6 +515,10 @@ vim.diagnostic.config({
 -- set theme
 vim.opt.termguicolors = true -- enable true colors
 -- vim.cmd 'colorscheme onelight'
+
+-- Use rounded borders for all floating windows (new in Neovim 0.11)
+vim.o.winborder = 'rounded'
+
 vim.cmd 'colorscheme onedark_dark'
 
 -- Make line numbers default
@@ -605,7 +603,12 @@ vim.api.nvim_set_keymap('n', '<leader>x', '<Plug>SnipRun', { silent = true })
 
 -- LSP keymaps
 vim.api.nvim_create_autocmd('LspAttach', {
-  callback = function()
+  callback = function(ev)
+    -- -- new lsp autocompletion supported natively in neovim
+    -- local client = vim.lsp.get_client_by_id(ev.data.client_id)
+    -- if client:supports_method('textDocument/completion') then
+    --   vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = true })
+    -- end
     -- Jump to the definition of the word under your cursor.
     --  To jump back, press <C-t>.
     vim.keymap.set('n', 'gd', require('telescope.builtin').lsp_definitions, { desc = '[G]oto [D]efinition' })
