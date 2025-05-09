@@ -519,6 +519,9 @@ vim.opt.termguicolors = true -- enable true colors
 -- Use rounded borders for all floating windows (new in Neovim 0.11)
 vim.o.winborder = 'rounded'
 
+-- disable autoinsert of first option in menus
+vim.o.completeopt = 'menuone,popup,noinsert'
+
 vim.cmd 'colorscheme onedark_dark'
 
 -- Make line numbers default
