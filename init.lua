@@ -22,18 +22,21 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup {
   -- color theme
   'olimorris/onedarkpro.nvim',
-  "rebelot/kanagawa.nvim",
+  'rebelot/kanagawa.nvim',
   'folke/tokyonight.nvim',
-  { 'catppuccin/nvim',                         name = 'catppuccin',     priority = 1000 },
+  { 'catppuccin/nvim', name = 'catppuccin', priority = 1000 },
   -- auto change to dark mode and light mode
-  { "f-person/auto-dark-mode.nvim", opts = {
-    set_dark_mode = function()
-      vim.cmd 'colorscheme onedark_dark'
-    end,
-    set_light_mode = function()
-      vim.cmd 'colorscheme onelight'
-    end,
-  } },
+  {
+    'f-person/auto-dark-mode.nvim',
+    opts = {
+      set_dark_mode = function()
+        vim.cmd 'colorscheme onedark_dark'
+      end,
+      set_light_mode = function()
+        vim.cmd 'colorscheme onelight'
+      end,
+    },
+  },
   {
     -- syntax highlighting
     -- https://github.com/nvim-treesitter/nvim-treesitter
@@ -41,7 +44,23 @@ require('lazy').setup {
     build = ':TSUpdate',
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     opts = {
-      ensure_installed = { 'bash', 'c', 'comment', 'diff', 'html', 'lua', 'luap', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'python', 'elixir' },
+      ensure_installed = {
+        'bash',
+        'c',
+        'comment',
+        'diff',
+        'html',
+        'lua',
+        'luap',
+        'luadoc',
+        'markdown',
+        'markdown_inline',
+        'query',
+        'vim',
+        'vimdoc',
+        'python',
+        'elixir',
+      },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = { enable = true },
@@ -62,13 +81,13 @@ require('lazy').setup {
           enable = true,
           set_jumps = true, -- whether to set jumps in the jumplist
           goto_next_start = {
-            ["]c"] = "@class.outer",
+            [']c'] = '@class.outer',
             -- https://github.com/nvim-treesitter/nvim-treesitter-textobjects?tab=readme-ov-file#built-in-textobjects
             -- ["]]"] = "@function.outer",
           },
           goto_previous_start = {
             -- ["[["] = "@function.outer",
-            ["[c"] = "@class.outer",
+            ['[c'] = '@class.outer',
           },
         },
       },
@@ -85,7 +104,7 @@ require('lazy').setup {
     dependencies = {
       -- check all available LSPs using `:Mason`
       { 'williamboman/mason.nvim', opts = {} },
-      "neovim/nvim-lspconfig",
+      'neovim/nvim-lspconfig',
     },
     opts = {
       ensure_installed = {
@@ -96,11 +115,12 @@ require('lazy').setup {
         'lua_ls',
         'ruff',
         'pyright',
+        'ty',
         'yamlls',
         'astro',
         'docker_compose_language_service',
       },
-    }
+    },
   },
   -- highlight current word using LSP, tree-sitter
   -- https://github.com/RRethy/vim-illuminate
@@ -211,16 +231,16 @@ require('lazy').setup {
     },
   },
   -- auto pair brackets and quotes
-  { 'windwp/nvim-autopairs',     event = 'InsertEnter', opts = { check_ts = true } },
+  { 'windwp/nvim-autopairs', event = 'InsertEnter', opts = { check_ts = true } },
   -- add quotes around selected text
-  { 'echasnovski/mini.surround', version = false,       opts = {} },
+  { 'echasnovski/mini.surround', version = false, opts = {} },
   -- auto close functions
   'RRethy/nvim-treesitter-endwise',
   -- configure jumps on [[, ]], ]m, [m - for all languages
   -- configured via textobjects in treesitter
   'nvim-treesitter/nvim-treesitter-textobjects',
   -- auto close tags in html
-  { 'windwp/nvim-ts-autotag',              opts = {} },
+  { 'windwp/nvim-ts-autotag', opts = {} },
   -- multi cursor
   'mg979/vim-visual-multi',
   -- create file on :e
@@ -281,7 +301,7 @@ require('lazy').setup {
       spec = {
         { '<leader>a', group = '[A]I' },
         { '<leader>b', group = '[B]uffer' },
-        { '<leader>c', group = '[C]ode',     mode = { 'n', 'x' } },
+        { '<leader>c', group = '[C]ode', mode = { 'n', 'x' } },
         { '<leader>d', group = '[D]ocument' },
         { '<leader>r', group = '[R]ename' },
         { '<leader>s', group = '[S]earch' },
@@ -293,11 +313,11 @@ require('lazy').setup {
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
   -- better dialogs
-  { 'stevearc/dressing.nvim',   opts = {} },
+  { 'stevearc/dressing.nvim', opts = {} },
   -- codecompanion for ai
   {
-    'pratyushmittal/codecompanion.nvim',
-    branch = "diff-update",
+    'olimorris/codecompanion.nvim',
+    branch = 'main',
     opts = {
       adapters = {
         openai = function()
@@ -314,6 +334,12 @@ require('lazy').setup {
       strategies = {
         chat = {
           adapter = 'openai',
+          tools = {
+            opts = {
+              auto_submit_errors = false, -- Send any errors to the LLM automatically?
+              auto_submit_success = false, -- Send any successful output to the LLM automatically?
+            },
+          },
         },
         inline = {
           adapter = 'openai',
@@ -369,7 +395,7 @@ require('lazy').setup {
     },
   },
   -- disable LSP and treesitter for big files over 2mb
-  { 'LunarVim/bigfile.nvim',     opts = {} },
+  { 'LunarVim/bigfile.nvim', opts = {} },
   -- retain layout on :bd
   'famiu/bufdelete.nvim',
   -- jumping cursor animation
@@ -387,16 +413,16 @@ require('lazy').setup {
   },
   -- insert log lines automatically
   {
-    "Goose97/timber.nvim",
-    version = "*", -- Use for stability; omit to use `main` branch for the latest features
-    event = "VeryLazy",
+    'Goose97/timber.nvim',
+    version = '*', -- Use for stability; omit to use `main` branch for the latest features
+    event = 'VeryLazy',
     opts = {},
   },
   -- search and execute commands
   { 'doctorfree/cheatsheet.nvim', opts = { bundled_cheatsheets = { disabled = { 'nerd-fonts' } } } },
   -- lsp supported code completions in mardown and other embeds
   -- need to call :OtterActivate to enable
-  { 'jmbuhr/otter.nvim',          opts = {} },
+  { 'jmbuhr/otter.nvim', opts = {} },
   -- jumping between neighbours
   {
     'aaronik/treewalker.nvim',
@@ -414,10 +440,9 @@ require('lazy').setup {
       -- The color of the above highlight. Must be a valid vim highlight group.
       -- (see :h highlight-group for options)
       highlight_group = 'CursorLine',
-    }
+    },
   },
 }
-
 
 -- LSP
 -- LSP for linting, definition, references, symbols
@@ -457,7 +482,7 @@ vim.lsp.config('rust_analyzer', {
   },
 })
 
-vim.lsp.config("cssls", {
+vim.lsp.config('cssls', {
   capabilities = capabilities,
   settings = {
     -- we can check all properties by doing :Mason, select tool, "LSP server configuration schema"
@@ -466,11 +491,11 @@ vim.lsp.config("cssls", {
     },
   },
 })
-vim.lsp.config("yamlls", { capabilities = capabilities })
-vim.lsp.config("biome", { capabilities = capabilities })
-vim.lsp.config("emmet_language_server", { capabilities = capabilities })
-vim.lsp.config("astro", { capabilities = capabilities })
-vim.lsp.config("lua_ls", {
+vim.lsp.config('yamlls', { capabilities = capabilities })
+vim.lsp.config('biome', { capabilities = capabilities })
+vim.lsp.config('emmet_language_server', { capabilities = capabilities })
+vim.lsp.config('astro', { capabilities = capabilities })
+vim.lsp.config('lua_ls', {
   capabilities = capabilities,
   settings = {
     Lua = {
@@ -478,20 +503,17 @@ vim.lsp.config("lua_ls", {
     },
   },
 })
-vim.lsp.config("docker_compose_language_service", { capabilities = capabilities })
+vim.lsp.config('docker_compose_language_service', { capabilities = capabilities })
 
+vim.lsp.config('ty', { capabilities = capabilities })
 
 -- show diagnostic errors inline
-vim.diagnostic.config({
-  -- Use the default configuration
-  virtual_lines = true
-
-  -- Alternatively, customize specific options
-  -- virtual_lines = {
-  --  -- Only show virtual line diagnostics for the current cursor line
-  --  current_line = true,
-  -- },
-})
+vim.diagnostic.config {
+  virtual_lines = {
+    -- Only show virtual line diagnostics for the current cursor line
+    current_line = true,
+  },
+}
 
 -- configure otter for markdown and codecompanion
 -- https://github.com/olimorris/codecompanion.nvim/discussions/1284
@@ -508,7 +530,6 @@ vim.diagnostic.config({
 --     })
 --   end
 -- })
-
 
 -- VIM OPTIONS
 -- we can see all options using `:help option-list`
@@ -586,12 +607,9 @@ vim.keymap.set('n', '<leader>bn', ':bn<CR>', { desc = '[B]uffer [N]ext' })
 vim.keymap.set('n', '<leader>bd', ':Bdelete<CR>', { desc = '[B]uffer [D]elete' })
 
 -- ai codecompanion
-vim.keymap.set({ 'n', 'v' }, '<leader>aa', '<cmd>CodeCompanionActions<cr>',
-  { noremap = true, silent = true, desc = '[A]ctions' })
-vim.keymap.set({ 'n', 'v' }, '<leader>at', '<cmd>CodeCompanionChat Toggle<cr>',
-  { noremap = true, silent = true, desc = '[T]oggle' })
-vim.keymap.set({ 'n', 'v' }, '<leader>ae', ":'<,'>CodeCompanion #buffer ",
-  { noremap = true, silent = true, desc = '[E]dit' })
+vim.keymap.set({ 'n', 'v' }, '<leader>aa', '<cmd>CodeCompanionChat<cr>', { noremap = true, silent = true, desc = '[A]ctions' })
+vim.keymap.set({ 'n', 'v' }, '<leader>at', '<cmd>CodeCompanionChat Toggle<cr>', { noremap = true, silent = true, desc = '[T]oggle' })
+vim.keymap.set({ 'n', 'v' }, '<leader>ae', ":'<,'>CodeCompanion #buffer ", { noremap = true, silent = true, desc = '[E]dit' })
 
 -- Expand 'cc' into 'CodeCompanion' in the command line
 vim.cmd [[cab cc CodeCompanion]]
