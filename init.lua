@@ -119,6 +119,7 @@ require('lazy').setup {
         'yamlls',
         'astro',
         'docker_compose_language_service',
+        'harper_ls',
       },
     },
   },
@@ -317,7 +318,7 @@ require('lazy').setup {
   -- codecompanion for ai
   {
     'olimorris/codecompanion.nvim',
-    branch = 'main',
+    -- branch = '*',
     opts = {
       adapters = {
         openai = function()
@@ -347,6 +348,9 @@ require('lazy').setup {
         cmd = {
           adapter = 'openai',
         },
+      },
+      opts = {
+        log_level = 'DEBUG',
       },
     },
     dependencies = {
@@ -506,6 +510,31 @@ vim.lsp.config('lua_ls', {
 vim.lsp.config('docker_compose_language_service', { capabilities = capabilities })
 
 vim.lsp.config('ty', { capabilities = capabilities })
+vim.lsp.config('harper_ls', {
+  capabilities = capabilities,
+  filetypes = {
+    'gitcommit',
+    'html',
+    'htmldjango',
+    'javascript',
+    'lua',
+    'markdown',
+    'python',
+    'rust',
+    'swift',
+    'toml',
+    'php',
+    'dart',
+  },
+  settings = {
+    ['harper-ls'] = {
+      userDictPath = '~/dict.txt',
+      linters = {
+        SentenceCapitalization = false,
+      },
+    },
+  },
+})
 
 -- show diagnostic errors inline
 vim.diagnostic.config {
