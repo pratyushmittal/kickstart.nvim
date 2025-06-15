@@ -50,6 +50,7 @@ require('lazy').setup {
         'comment',
         'diff',
         'html',
+        'htmldjango',
         'lua',
         'luap',
         'luadoc',
@@ -509,7 +510,7 @@ vim.lsp.config('lua_ls', {
 })
 vim.lsp.config('docker_compose_language_service', { capabilities = capabilities })
 
-vim.lsp.config('ty', { capabilities = capabilities })
+vim.lsp.config('ty', { capabilities = capabilities, offset_encoding = 'utf-8' })
 vim.lsp.config('harper_ls', {
   capabilities = capabilities,
   filetypes = {
@@ -734,17 +735,14 @@ vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right win
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
--- Toggle between equal window sizes and full-width
-local window_state = 'equal'
 vim.keymap.set('n', '<leader>f', function()
-  if window_state == 'equal' then
-    vim.cmd 'wincmd |' -- Make window full-width
-    window_state = 'full'
+  -- If there is only one window, open a vertical split
+  if vim.fn.winnr() < 2 then
+    vim.cmd 'vsp'
   else
-    vim.cmd 'wincmd =' -- Make windows equal size
-    window_state = 'equal'
+    vim.cmd 'only'
   end
-end, { desc = 'Toggle [F]ull Screen' })
+end, { desc = 'Make current window [F]ull (close others, or vsp if only one)' })
 
 -- treewalker movement
 -- https://github.com/aaronik/treewalker.nvim?tab=readme-ov-file#mapping
