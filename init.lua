@@ -21,7 +21,12 @@ vim.opt.rtp:prepend(lazypath)
 -- Setup lazy.nvim
 require('lazy').setup {
   -- color theme
-  'olimorris/onedarkpro.nvim',
+  {
+    'olimorris/onedarkpro.nvim',
+    opts = {
+      options = { cursorline = true },
+    },
+  },
   'rebelot/kanagawa.nvim',
   'folke/tokyonight.nvim',
   { 'catppuccin/nvim', name = 'catppuccin', priority = 1000 },
@@ -124,7 +129,7 @@ require('lazy').setup {
       },
     },
   },
-  -- highlight current word using LSP, tree-sitter
+  -- highlight current word (under cursor) using LSP, tree-sitter
   -- https://github.com/RRethy/vim-illuminate
   'RRethy/vim-illuminate',
   -- snippets
@@ -321,6 +326,7 @@ require('lazy').setup {
     'olimorris/codecompanion.nvim',
     -- branch = '*',
     opts = {
+      prompt_library = require 'prompts',
       adapters = {
         openai = function()
           return require('codecompanion.adapters').extend('openai', {
@@ -403,8 +409,6 @@ require('lazy').setup {
   { 'LunarVim/bigfile.nvim', opts = {} },
   -- retain layout on :bd
   'famiu/bufdelete.nvim',
-  -- jumping cursor animation
-  { 'sphamba/smear-cursor.nvim', opts = {} },
   -- run tests
   'vim-test/vim-test',
   -- run code repl
@@ -449,7 +453,6 @@ require('lazy').setup {
   },
 }
 
--- LSP
 -- LSP for linting, definition, references, symbols
 -- local capabilities = vim.lsp.protocol.make_client_capabilities()
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
@@ -637,7 +640,8 @@ vim.keymap.set('n', '<leader>bn', ':bn<CR>', { desc = '[B]uffer [N]ext' })
 vim.keymap.set('n', '<leader>bd', ':Bdelete<CR>', { desc = '[B]uffer [D]elete' })
 
 -- ai codecompanion
-vim.keymap.set({ 'n', 'v' }, '<leader>aa', '<cmd>CodeCompanionChat<cr>', { noremap = true, silent = true, desc = '[A]ctions' })
+vim.keymap.set({ 'n', 'v' }, '<leader>aa', '<cmd>CodeCompanionActions<cr>', { noremap = true, silent = true, desc = '[A]ctions' })
+vim.keymap.set({ 'n', 'v' }, '<leader>ac', '<cmd>CodeCompanionChat<cr>', { noremap = true, silent = true, desc = '[C]hat' })
 vim.keymap.set({ 'n', 'v' }, '<leader>at', '<cmd>CodeCompanionChat Toggle<cr>', { noremap = true, silent = true, desc = '[T]oggle' })
 vim.keymap.set({ 'n', 'v' }, '<leader>ae', ":'<,'>CodeCompanion #buffer ", { noremap = true, silent = true, desc = '[E]dit' })
 
