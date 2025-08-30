@@ -27,18 +27,35 @@ require('lazy').setup {
       options = { cursorline = true },
     },
   },
-  'rebelot/kanagawa.nvim',
+  { 'rebelot/kanagawa.nvim', opts = { dimInactive = true } },
   'folke/tokyonight.nvim',
+  'vague2k/vague.nvim',
+  {
+    'EdenEast/nightfox.nvim',
+    opts = {
+      -- https://github.com/EdenEast/nightfox.nvim?tab=readme-ov-file#configuration
+      options = {
+        dim_inactive = true,
+        colorblind = {},
+        styles = {
+          comments = 'italic',
+          conditionals = 'bold',
+          keywords = 'bold',
+          types = 'italic',
+        },
+      },
+    },
+  },
   { 'catppuccin/nvim', name = 'catppuccin', priority = 1000 },
   -- auto change to dark mode and light mode
   {
     'f-person/auto-dark-mode.nvim',
     opts = {
       set_dark_mode = function()
-        vim.cmd 'colorscheme onedark_dark'
+        vim.cmd 'colorscheme kanagawa'
       end,
       set_light_mode = function()
-        vim.cmd 'colorscheme onelight'
+        vim.cmd 'colorscheme kanagawa'
       end,
     },
   },
@@ -119,6 +136,7 @@ require('lazy').setup {
         opts = {
 
           ensure_installed = {
+            'bashls',
             'biome',
             'cssls',
             'djlint',
@@ -194,7 +212,18 @@ require('lazy').setup {
       completion = {
         -- By default, you may press `<c-space>` to show the documentation.
         -- Optionally, set `auto_show = true` to show the documentation after a delay.
-        documentation = { auto_show = true, auto_show_delay_ms = 500 },
+        documentation = { auto_show = true, auto_show_delay_ms = 200 },
+        menu = {
+          -- default
+          -- https://cmp.saghen.dev/configuration/reference.html#completion-menu-draw
+          border = 'rounded',
+          draw = {
+            columns = {
+              { 'label', 'label_description', gap = 1 },
+              { 'kind_icon', 'kind' },
+            },
+          },
+        },
       },
 
       sources = {
@@ -298,7 +327,7 @@ require('lazy').setup {
           -- we have fallback for lsp below. Hence need these only when the lsp doesn't do formatting
           lua = { 'stylua' },
           -- Conform will run the first available formatter
-          html = { 'prettierd', 'prettier', stop_after_first = true },
+          html = { 'djlint', 'prettierd', 'prettier', stop_after_first = true },
           css = { 'biome', 'prettier', stop_after_first = true },
           htmldjango = { 'djlint' },
           python = { 'ruff_fix', 'ruff_organize_imports', 'ruff_format' },
@@ -350,8 +379,8 @@ require('lazy').setup {
   { 'stevearc/dressing.nvim', opts = {} },
   -- codecompanion for ai
   {
-    'olimorris/codecompanion.nvim',
-    -- branch = '*',
+    'pratyushmittal/codecompanion.nvim',
+    branch = 'tab-autocomplete',
     opts = {
       prompt_library = require 'prompts',
       adapters = {
@@ -360,7 +389,7 @@ require('lazy').setup {
             schema = {
               model = {
                 -- default = 'o4-mini-2025-04-16',
-                default = 'gpt-4.1-2025-04-14',
+                default = 'gpt-5-2025-08-07',
               },
             },
           })
@@ -456,10 +485,10 @@ require('lazy').setup {
   },
   -- search and execute commands
   { 'doctorfree/cheatsheet.nvim', opts = { bundled_cheatsheets = { disabled = { 'nerd-fonts' } } } },
-  -- lsp supported code completions in mardown and other embeds
+  -- lsp supported code completions in markdown and other embeds
   -- need to call :OtterActivate to enable
   { 'jmbuhr/otter.nvim', opts = {} },
-  -- jumping between neighbours
+  -- jumping between neighbors
   {
     'aaronik/treewalker.nvim',
 
@@ -566,10 +595,7 @@ vim.lsp.config('harper_ls', {
     'gitcommit',
     'html',
     'htmldjango',
-    'javascript',
-    'lua',
     'markdown',
-    'python',
     'rust',
     'swift',
     'toml',
@@ -592,30 +618,30 @@ vim.diagnostic.config {
     -- Only show virtual line diagnostics for the current cursor line
     current_line = true,
   },
-  severity_sort = true,
-  float = { border = 'rounded', source = 'if_many' },
-  underline = { severity = vim.diagnostic.severity.ERROR },
-  signs = vim.g.have_nerd_font and {
-    text = {
-      [vim.diagnostic.severity.ERROR] = '󰅚 ',
-      [vim.diagnostic.severity.WARN] = '󰀪 ',
-      [vim.diagnostic.severity.INFO] = '󰋽 ',
-      [vim.diagnostic.severity.HINT] = '󰌶 ',
-    },
-  } or {},
-  virtual_text = {
-    source = 'if_many',
-    spacing = 2,
-    format = function(diagnostic)
-      local diagnostic_message = {
-        [vim.diagnostic.severity.ERROR] = diagnostic.message,
-        [vim.diagnostic.severity.WARN] = diagnostic.message,
-        [vim.diagnostic.severity.INFO] = diagnostic.message,
-        [vim.diagnostic.severity.HINT] = diagnostic.message,
-      }
-      return diagnostic_message[diagnostic.severity]
-    end,
-  },
+  -- severity_sort = true,
+  -- float = { border = 'rounded', source = 'if_many' },
+  -- underline = { severity = vim.diagnostic.severity.ERROR },
+  -- signs = vim.g.have_nerd_font and {
+  --   text = {
+  --     [vim.diagnostic.severity.ERROR] = '󰅚 ',
+  --     [vim.diagnostic.severity.WARN] = '󰀪 ',
+  --     [vim.diagnostic.severity.INFO] = '󰋽 ',
+  --     [vim.diagnostic.severity.HINT] = '󰌶 ',
+  --   },
+  -- } or {},
+  -- virtual_text = {
+  --   source = 'if_many',
+  --   spacing = 2,
+  --   format = function(diagnostic)
+  --     local diagnostic_message = {
+  --       [vim.diagnostic.severity.ERROR] = diagnostic.message,
+  --       [vim.diagnostic.severity.WARN] = diagnostic.message,
+  --       [vim.diagnostic.severity.INFO] = diagnostic.message,
+  --       [vim.diagnostic.severity.HINT] = diagnostic.message,
+  --     }
+  --     return diagnostic_message[diagnostic.severity]
+  --   end,
+  -- },
 }
 
 -- configure otter for markdown and codecompanion
@@ -672,7 +698,7 @@ vim.o.ignorecase = true
 vim.o.smartcase = true
 
 -- show signcolumn only when there are changes default
-vim.o.signcolumn = 'no'
+-- vim.o.signcolumn = 'yes'
 
 -- Decrease the auto-save time
 vim.o.updatetime = 250
@@ -728,14 +754,21 @@ vim.keymap.set('n', '<leader>bd', ':Bdelete<CR>', { desc = '[B]uffer [D]elete' }
 vim.keymap.set({ 'n', 'v' }, '<leader>aa', '<cmd>CodeCompanionActions<cr>', { noremap = true, silent = true, desc = '[A]ctions' })
 vim.keymap.set({ 'n', 'v' }, '<leader>ac', '<cmd>CodeCompanionChat<cr>', { noremap = true, silent = true, desc = '[C]hat' })
 vim.keymap.set({ 'n', 'v' }, '<leader>at', '<cmd>CodeCompanionChat Toggle<cr>', { noremap = true, silent = true, desc = '[T]oggle' })
+vim.keymap.set({ 'i' }, '<C-f>', '<cmd>CodeCompanionComplete<cr>', { noremap = true, silent = true, desc = 'Complete [F]orward' })
 vim.keymap.set({ 'n', 'v' }, '<leader>ae', ":'<,'>CodeCompanion #buffer ", { noremap = true, silent = true, desc = '[E]dit' })
 
--- Expand 'cc' into 'CodeCompanion' in the command line
-vim.cmd [[cab cc CodeCompanion]]
-
--- run tests easily
-vim.keymap.set('n', '<leader>t', ':TestNearest<CR>', { desc = '[T]est nearest' })
-vim.g['test#python#djangotest#options'] = '--keepdb --settings=$DJANGO_TEST_SETTINGS'
+-- CoffeeShop mode
+-- use CoffeeShop mode to hide what we type in public places
+-- we can use it using these commands
+vim.api.nvim_create_user_command('CoffeeShopModeOn', function()
+  -- Conceal lowercase letters with a bullet in all contexts
+  vim.cmd 'syntax match CoffeeShop /[a-z]/ conceal cchar=• contains=NONE containedin=ALL'
+  -- Keep default highlight so colors don't change
+  vim.cmd 'highlight default link CoffeeShop Normal'
+  -- Enable conceal in normal and insert modes
+  vim.wo.conceallevel = 2
+  vim.wo.concealcursor = 'ni'
+end, { desc = 'Enable CoffeeShop mode: conceal lowercase letters with a bullet' })
 
 -- run replt
 vim.api.nvim_set_keymap('v', '<leader>x', '<Plug>SnipRun', { silent = true })
@@ -743,7 +776,7 @@ vim.api.nvim_set_keymap('n', '<leader>x', '<Plug>SnipRun', { silent = true })
 
 -- LSP keymaps
 vim.api.nvim_create_autocmd('LspAttach', {
-  callback = function(ev)
+  callback = function()
     -- -- new lsp autocompletion supported natively in neovim
     -- local client = vim.lsp.get_client_by_id(ev.data.client_id)
     -- if client:supports_method('textDocument/completion') then
@@ -884,6 +917,14 @@ vim.api.nvim_create_user_command('ConformEnable', function()
   vim.g.disable_autoformat = false
 end, {
   desc = 'Re-enable autoformat-on-save',
+})
+
+-- Treat .jrnl file as markdown
+vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
+  pattern = '*.jrnl',
+  callback = function()
+    vim.bo.filetype = 'markdown'
+  end,
 })
 
 -- -- The line beneath this is called `modeline`. See `:help modeline`
