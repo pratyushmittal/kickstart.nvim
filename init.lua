@@ -508,12 +508,12 @@ vim.lsp.config('ruff', { capabilities = capabilities, offset_encoding = 'utf-8' 
 vim.lsp.config('pyright', {
   capabilities = capabilities,
   offset_encoding = 'utf-8',
-  -- Only use Pyright for renames: disable all other features and diagnostics
   on_attach = function(client, bufnr)
     local caps = client.server_capabilities or {}
 
-    -- Keep rename enabled (do not touch caps.renameProvider)
-    -- Disable everything else
+    -- Use renames and symbol imports from pyright
+    -- disable everything else
+    -- caps.renameProvider = false
     caps.hoverProvider = false
     caps.definitionProvider = false
     caps.typeDefinitionProvider = false
@@ -524,7 +524,7 @@ vim.lsp.config('pyright', {
     caps.documentSymbolProvider = false
     caps.workspaceSymbolProvider = false
     caps.codeActionProvider = false
-    caps.completionProvider = nil
+    -- caps.completionProvider = nil
     caps.signatureHelpProvider = nil
     caps.codeLensProvider = nil
     caps.documentFormattingProvider = false
