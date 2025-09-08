@@ -21,31 +21,16 @@ vim.opt.rtp:prepend(lazypath)
 -- Setup lazy.nvim
 require('lazy').setup {
   -- color theme
+  { 'rktjmp/lush.nvim' },
   {
     'olimorris/onedarkpro.nvim',
     opts = {
       options = { cursorline = true },
     },
   },
-  { 'rebelot/kanagawa.nvim', opts = { dimInactive = true } },
+  { 'rebelot/kanagawa.nvim', opts = { dimInactive = true, undercurl = true } },
   'folke/tokyonight.nvim',
   'vague2k/vague.nvim',
-  {
-    'EdenEast/nightfox.nvim',
-    opts = {
-      -- https://github.com/EdenEast/nightfox.nvim?tab=readme-ov-file#configuration
-      options = {
-        dim_inactive = true,
-        colorblind = {},
-        styles = {
-          comments = 'italic',
-          conditionals = 'bold',
-          keywords = 'bold',
-          types = 'italic',
-        },
-      },
-    },
-  },
   { 'catppuccin/nvim', name = 'catppuccin', priority = 1000 },
   -- auto change to dark mode and light mode
   {
@@ -139,6 +124,7 @@ require('lazy').setup {
             'bashls',
             'biome',
             'cssls',
+            'codebook',
             'djlint',
             'docker_compose_language_service',
             'emmet_language_server',
