@@ -369,21 +369,10 @@ require('lazy').setup {
     branch = 'tab-autocomplete',
     opts = {
       prompt_library = require 'prompts',
-      adapters = {
-        openai = function()
-          return require('codecompanion.adapters').extend('openai', {
-            schema = {
-              model = {
-                -- default = 'o4-mini-2025-04-16',
-                default = 'gpt-5-2025-08-07',
-              },
-            },
-          })
-        end,
-      },
       strategies = {
         chat = {
           adapter = 'openai',
+          model = 'gpt-5-2025-08-07',
           tools = {
             opts = {
               auto_submit_errors = false, -- Send any errors to the LLM automatically?
@@ -393,9 +382,11 @@ require('lazy').setup {
         },
         inline = {
           adapter = 'openai',
+          model = 'gpt-5-2025-08-07',
         },
         cmd = {
           adapter = 'openai',
+          model = 'gpt-5-2025-08-07',
         },
       },
       opts = {
@@ -517,6 +508,46 @@ vim.lsp.config('ruff', { capabilities = capabilities, offset_encoding = 'utf-8' 
 vim.lsp.config('pyright', {
   capabilities = capabilities,
   offset_encoding = 'utf-8',
+  -- Only use Pyright for renames: disable all other features and diagnostics
+  on_attach = function(client, bufnr)
+    local caps = client.server_capabilities or {}
+
+    -- Keep rename enabled (do not touch caps.renameProvider)
+    -- Disable everything else
+    caps.hoverProvider = false
+    caps.definitionProvider = false
+    caps.typeDefinitionProvider = false
+    caps.implementationProvider = false
+    caps.referencesProvider = false
+    caps.declarationProvider = false
+    caps.documentHighlightProvider = false
+    caps.documentSymbolProvider = false
+    caps.workspaceSymbolProvider = false
+    caps.codeActionProvider = false
+    caps.completionProvider = nil
+    caps.signatureHelpProvider = nil
+    caps.codeLensProvider = nil
+    caps.documentFormattingProvider = false
+    caps.documentRangeFormattingProvider = false
+    caps.documentOnTypeFormattingProvider = nil
+    caps.foldingRangeProvider = false
+    caps.semanticTokensProvider = nil
+    caps.callHierarchyProvider = false
+    caps.inlayHintProvider = false
+    caps.inlineValueProvider = false
+    caps.linkedEditingRangeProvider = false
+    caps.documentColorProvider = false
+    caps.documentLinkProvider = nil
+    caps.monikerProvider = false
+    caps.selectionRangeProvider = false
+
+    -- Ignore diagnostics from Pyright so another tool (e.g. Ruff) can own them
+    client.handlers['textDocument/publishDiagnostics'] = function() end
+  end,
+  handlers = {
+    -- Also disable diagnostics at the config level
+    ['textDocument/publishDiagnostics'] = function() end,
+  },
   settings = {
     pyright = {
       -- Using Ruff's import organizer
