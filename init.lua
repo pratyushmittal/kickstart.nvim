@@ -21,17 +21,17 @@ vim.opt.rtp:prepend(lazypath)
 -- Setup lazy.nvim
 require('lazy').setup {
   -- color theme
-  { 'rktjmp/lush.nvim' },
+  'https://github.com/rktjmp/lush.nvim',
   {
-    'olimorris/onedarkpro.nvim',
+    'https://github.com/olimorris/onedarkpro.nvim',
     opts = {
       options = { cursorline = true },
     },
   },
-  { 'rebelot/kanagawa.nvim', opts = { dimInactive = true, undercurl = true } },
-  'folke/tokyonight.nvim',
-  'vague2k/vague.nvim',
-  { 'catppuccin/nvim', name = 'catppuccin', priority = 1000 },
+  { 'https://github.com/rebelot/kanagawa.nvim', opts = { dimInactive = true, undercurl = true } },
+  'https://github.com/folke/tokyonight.nvim',
+  'https://github.com/vague2k/vague.nvim',
+  { 'https://github.com/catppuccin/nvim', name = 'catppuccin', priority = 1000 },
   -- auto change to dark mode and light mode
   {
     'f-person/auto-dark-mode.nvim',
@@ -69,11 +69,11 @@ require('lazy').setup {
         'python',
         'elixir',
       },
-      -- Autoinstall languages that are not installed
+      -- Auto Install languages that are not installed
       auto_install = true,
       highlight = { enable = true },
       indent = { enable = true },
-      -- RRethy/nvim-treesitter-endwise extension
+      -- https://github.com/RRethy/nvim-treesitter-endwise extension
       endwise = { enable = true },
       -- incremental selection
       incremental_selection = {
@@ -104,20 +104,20 @@ require('lazy').setup {
   -- show current method or class name when scrolling
   { 'nvim-treesitter/nvim-treesitter-context', opts = { max_lines = 2 } },
   -- use mason to install and manage linters, LSPs, DAPs and formatters for vim's LSP
-  -- vim's lsp DOESN'T automatically install these, nor does it provide a way to install these
+  -- vim's lsp doesn't automatically install these, nor does it provide a way to install these
   {
     -- mason-lspconfig automatically installs the libraries we mention
     -- plus it automatically calls vim.lsp.enable() on them
     'mason-org/mason-lspconfig.nvim',
     dependencies = {
       -- check all available LSPs using `:Mason`
-      { 'mason-org/mason.nvim', opts = {} },
-      'neovim/nvim-lspconfig',
+      { 'https://github.com/mason-org/mason.nvim', opts = {} },
+      'https://github.com/neovim/nvim-lspconfig',
       -- while mason actually installs the binaries for linters
       -- and nvim-lspconfig configures them
       -- mason-tool-installer allow us to configure `ensure_installed` so that these are automatically passed to mason for installation
       {
-        'WhoIsSethDaniel/mason-tool-installer.nvim',
+        'https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim',
         opts = {
 
           ensure_installed = {
@@ -149,33 +149,33 @@ require('lazy').setup {
   -- Useful status updates for LSP.
   { 'j-hui/fidget.nvim', opts = {} },
   -- highlight current word (under cursor) using LSP, tree-sitter
-  -- https://github.com/RRethy/vim-illuminate
-  'RRethy/vim-illuminate',
+  'https://github.com/RRethy/vim-illuminate',
   -- snippets
   {
-    'L3MON4D3/LuaSnip',
+    'https://github.com/L3MON4D3/LuaSnip',
     -- enable regex support
     build = 'make install_jsregexp',
     dependencies = {
-      -- `friendly-snippets` contains a variety of premade snippets
-      --    https://github.com/rafamadriz/friendly-snippets
+      -- `friendly-snippets` contains a variety of pre-made snippets
       {
-        'rafamadriz/friendly-snippets',
+        'https://github.com/rafamadriz/friendly-snippets',
         config = function()
           require('luasnip.loaders.from_vscode').lazy_load()
+          --  snipmate snippets are easier to write, hance use this for custom snippets in `snippets` folder
+          require('luasnip.loaders.from_snipmate').lazy_load()
         end,
       },
     },
   },
   -- auto-completion
   {
-    'saghen/blink.cmp',
+    'https://github.com/saghen/blink.cmp',
     -- requires version setting to download pre-built fuzzy binary
     -- https://cmp.saghen.dev/configuration/fuzzy#prebuilt-binaries-default-on-a-release-tag
     version = '1.*',
     event = 'VimEnter',
     dependencies = {
-      'folke/lazydev.nvim',
+      'https://github.com/folke/lazydev.nvim',
     },
     --- @module 'blink.cmp'
     --- @type blink.cmp.Config
@@ -267,7 +267,7 @@ require('lazy').setup {
   },
   -- GIT changes: `:help gitsigns`
   {
-    'lewis6991/gitsigns.nvim',
+    'https://github.com/lewis6991/gitsigns.nvim',
     opts = {
       signs = {
         add = { text = '+' },
@@ -279,33 +279,33 @@ require('lazy').setup {
     },
   },
   -- auto pair brackets and quotes
-  { 'windwp/nvim-autopairs', event = 'InsertEnter', opts = { check_ts = true } },
+  { 'https://github.com/windwp/nvim-autopairs', event = 'InsertEnter', opts = { check_ts = true } },
   -- add quotes around selected text
-  { 'echasnovski/mini.surround', version = false, opts = {} },
+  { 'https://github.com/echasnovski/mini.surround', version = false, opts = {} },
   -- auto close functions
-  'RRethy/nvim-treesitter-endwise',
+  'https://github.com/RRethy/nvim-treesitter-endwise',
   -- configure jumps on [[, ]], ]m, [m - for all languages
   -- configured via textobjects in treesitter
   'nvim-treesitter/nvim-treesitter-textobjects',
   -- auto close tags in html
-  { 'windwp/nvim-ts-autotag', opts = {} },
+  { 'https://github.com/windwp/nvim-ts-autotag', opts = {} },
   -- multi cursor
   'mg979/vim-visual-multi',
   -- create file on :e
-  'jessarcher/vim-heritage',
+  'https://github.com/jessarcher/vim-heritage',
   -- managing files
   {
-    'stevearc/oil.nvim',
+    'https://github.com/stevearc/oil.nvim',
     opts = {},
-    dependencies = { { 'echasnovski/mini.icons', opts = {} } },
+    dependencies = { { 'https://github.com/echasnovski/mini.icons', opts = {} } },
   },
   -- detect tab width automatically based on current file and editorconfig
-  'tpope/vim-sleuth',
+  'https://github.com/tpope/vim-sleuth',
   -- show indent lines
-  { 'lukas-reineke/indent-blankline.nvim', main = 'ibl', opts = {} },
+  { 'https://github.com/lukas-reineke/indent-blankline.nvim', main = 'ibl', opts = {} },
   -- auto format on save
   {
-    'stevearc/conform.nvim',
+    'https://github.com/stevearc/conform.nvim',
     config = function()
       require('conform').setup {
         formatters_by_ft = {
@@ -342,7 +342,7 @@ require('lazy').setup {
   },
   -- make key-bindings easier to see
   {
-    'folke/which-key.nvim',
+    'https://github.com/folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
     opts = {
       -- Document existing key chains
@@ -360,12 +360,12 @@ require('lazy').setup {
     },
   },
   -- Highlight todo, notes, etc in comments
-  { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
+  { 'https://github.com/folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
   -- better dialogs
-  { 'stevearc/dressing.nvim', opts = {} },
-  -- codecompanion for ai
+  { 'https://github.com/stevearc/dressing.nvim', opts = {} },
+  -- CodeCompanion for ai
   {
-    'pratyushmittal/codecompanion.nvim',
+    'https://github.com/pratyushmittal/codecompanion.nvim',
     branch = 'tab-autocomplete',
     opts = {
       prompt_library = require 'prompts',
@@ -400,7 +400,7 @@ require('lazy').setup {
   },
   -- Status line
   {
-    'nvim-lualine/lualine.nvim',
+    'https://github.com/nvim-lualine/lualine.nvim',
     dependencies = { 'nvim-tree/nvim-web-devicons' },
     opts = {
       sections = {
@@ -413,7 +413,7 @@ require('lazy').setup {
   },
   -- floating terminal
   {
-    'akinsho/toggleterm.nvim',
+    'https://github.com/akinsho/toggleterm.nvim',
     version = '*',
     opts = {
       size = 20,
@@ -439,14 +439,14 @@ require('lazy').setup {
     },
   },
   -- disable LSP and treesitter for big files over 2mb
-  { 'LunarVim/bigfile.nvim', opts = {} },
+  { 'https://github.com/LunarVim/bigfile.nvim', opts = {} },
   -- retain layout on :bd
-  'famiu/bufdelete.nvim',
+  'https://github.com/famiu/bufdelete.nvim',
   -- run tests
-  'vim-test/vim-test',
+  'https://github.com/vim-test/vim-test',
   -- run code repl
   {
-    'michaelb/sniprun',
+    'https://github.com/michaelb/sniprun',
     branch = 'master',
     build = 'sh install.sh',
     -- do 'sh install.sh 1' if you want to force compile locally
@@ -455,19 +455,19 @@ require('lazy').setup {
   },
   -- insert log lines automatically
   {
-    'Goose97/timber.nvim',
+    'https://github.com/Goose97/timber.nvim',
     version = '*', -- Use for stability; omit to use `main` branch for the latest features
     event = 'VeryLazy',
     opts = {},
   },
   -- search and execute commands
-  { 'doctorfree/cheatsheet.nvim', opts = { bundled_cheatsheets = { disabled = { 'nerd-fonts' } } } },
+  { 'https://github.com/doctorfree/cheatsheet.nvim', opts = { bundled_cheatsheets = { disabled = { 'nerd-fonts' } } } },
   -- lsp supported code completions in markdown and other embeds
   -- need to call :OtterActivate to enable
-  { 'jmbuhr/otter.nvim', opts = {} },
+  { 'https://github.com/jmbuhr/otter.nvim', opts = {} },
   -- jumping between neighbors
   {
-    'aaronik/treewalker.nvim',
+    'https://github.com/aaronik/treewalker.nvim',
 
     -- The following options are the defaults.
     -- Treewalker aims for sane defaults, so these are each individually optional,
@@ -485,12 +485,12 @@ require('lazy').setup {
     },
   },
   -- Detect tabstop and shiftwidth automatically
-  'NMAC427/guess-indent.nvim',
+  'https://github.com/NMAC427/guess-indent.nvim',
   -- LSP Plugins
   {
     -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
     -- used for completion, annotations and signatures of Neovim apis
-    'folke/lazydev.nvim',
+    'https://github.com/folke/lazydev.nvim',
     ft = 'lua',
     opts = {
       library = {
