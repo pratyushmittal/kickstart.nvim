@@ -28,7 +28,18 @@ require('lazy').setup {
       options = { cursorline = true },
     },
   },
-  { 'https://github.com/rebelot/kanagawa.nvim', opts = { dimInactive = true, undercurl = true } },
+  {
+    'https://github.com/rebelot/kanagawa.nvim',
+    opts = {
+      dimInactive = true,
+      undercurl = true,
+      overrides = function(colors)
+        return {
+          ['@string.special.url'] = { underline = true, undercurl = false },
+        }
+      end,
+    },
+  },
   'https://github.com/folke/tokyonight.nvim',
   'https://github.com/vague2k/vague.nvim',
   { 'https://github.com/catppuccin/nvim', name = 'catppuccin', priority = 1000 },
