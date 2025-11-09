@@ -248,6 +248,7 @@ require('lazy').setup {
   -- Fuzzy Finder (files, lsp, etc)
   {
     'nvim-telescope/telescope.nvim',
+    branch = 'master',
     event = 'VimEnter',
     dependencies = {
       'nvim-lua/plenary.nvim',
@@ -535,7 +536,7 @@ vim.lsp.config('pyright', {
     caps.documentSymbolProvider = false
     caps.workspaceSymbolProvider = false
     caps.codeActionProvider = false
-    -- caps.completionProvider = nil
+    caps.completionProvider = nil
     caps.signatureHelpProvider = nil
     caps.codeLensProvider = nil
     caps.documentFormattingProvider = false
@@ -616,7 +617,16 @@ vim.lsp.config('lua_ls', {
 })
 vim.lsp.config('docker_compose_language_service', { capabilities = capabilities })
 
-vim.lsp.config('ty', { capabilities = capabilities, offset_encoding = 'utf-8' })
+vim.lsp.config(
+  'ty',
+  { capabilities = capabilities, offset_encoding = 'utf-8', settings = {
+    ty = {
+      experimental = {
+        autoImport = true,
+      },
+    },
+  } }
+)
 vim.lsp.config('harper_ls', {
   capabilities = capabilities,
   filetypes = {
