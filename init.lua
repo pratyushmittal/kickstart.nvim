@@ -146,6 +146,7 @@ require('lazy').setup {
             'rust_analyzer',
             'stylua',
             'ty',
+            'typescript-language-server',
             'yamlls',
           },
         },
@@ -601,6 +602,7 @@ vim.lsp.config('cssls', {
 })
 vim.lsp.config('yamlls', { capabilities = capabilities })
 vim.lsp.config('biome', { capabilities = capabilities })
+vim.lsp.config('ts_ls', { capabilities = capabilities })
 vim.lsp.config('emmet_language_server', { capabilities = capabilities })
 vim.lsp.config('astro', { capabilities = capabilities })
 vim.lsp.config('lua_ls', {
@@ -840,6 +842,7 @@ vim.keymap.set('n', ']e', ':Gitsigns next_hunk<CR>', { desc = 'Jump to next git 
 vim.keymap.set('n', '[e', ':Gitsigns prev_hunk<CR>', { desc = 'Jump to prev git [e]dit' })
 vim.keymap.set({ 'n', 'v' }, '<leader>hs', ':Gitsigns stage_hunk<CR>', { desc = 'git [s]tage hunk' })
 vim.keymap.set({ 'n', 'v' }, '<leader>hr', ':Gitsigns reset_hunk<CR>', { desc = 'git [r]eset hunk' })
+vim.keymap.set({ 'n', 'v' }, '<leader>hu', ':Gitsigns undo_stage_hunk<CR>', { desc = 'git [u]nstage hunk' })
 vim.keymap.set({ 'n', 'v' }, '<leader>hd', ':Gitsigns diffthis<CR>', { desc = 'git [d]iff against index' })
 vim.keymap.set({ 'n', 'v' }, '<leader>hp', ':Gitsigns preview_hunk<CR>', { desc = 'git [p]review hunk' })
 vim.keymap.set({ 'n', 'v' }, '<leader>hb', ':Gitsigns blame_line<CR>', { desc = 'git [b]lame line' })
