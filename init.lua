@@ -524,9 +524,9 @@ vim.lsp.config('pyright', {
   on_attach = function(client, bufnr)
     local caps = client.server_capabilities or {}
 
-    -- Use renames and symbol imports from pyright
+    -- Use goto_definition from pyright
     -- disable everything else
-    -- caps.renameProvider = false
+    caps.renameProvider = false
     caps.hoverProvider = false
     caps.definitionProvider = false
     caps.typeDefinitionProvider = false
