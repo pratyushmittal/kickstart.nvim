@@ -42,13 +42,14 @@ require('lazy').setup {
   },
   'https://github.com/folke/tokyonight.nvim',
   'https://github.com/vague2k/vague.nvim',
+  'https://github.com/srcery-colors/srcery-vim',
   { 'https://github.com/catppuccin/nvim', name = 'catppuccin', priority = 1000 },
   -- auto change to dark mode and light mode
   {
     'f-person/auto-dark-mode.nvim',
     opts = {
       set_dark_mode = function()
-        vim.cmd 'colorscheme kanagawa'
+        vim.cmd 'colorscheme srcery'
       end,
       set_light_mode = function()
         vim.cmd 'colorscheme kanagawa'
@@ -141,7 +142,6 @@ require('lazy').setup {
             'emmet_language_server',
             'harper_ls',
             'lua_ls',
-            'pyright',
             'ruff',
             'rust_analyzer',
             'stylua',
@@ -518,62 +518,6 @@ require('lazy').setup {
 -- local capabilities = vim.lsp.protocol.make_client_capabilities()
 local capabilities = require('blink.cmp').get_lsp_capabilities()
 vim.lsp.config('ruff', { capabilities = capabilities, offset_encoding = 'utf-8' })
-vim.lsp.config('pyright', {
-  capabilities = capabilities,
-  offset_encoding = 'utf-8',
-  on_attach = function(client, bufnr)
-    local caps = client.server_capabilities or {}
-
-    -- Use goto_definition from pyright
-    -- disable everything else
-    caps.renameProvider = false
-    caps.hoverProvider = false
-    caps.definitionProvider = false
-    caps.typeDefinitionProvider = false
-    caps.implementationProvider = false
-    caps.referencesProvider = false
-    caps.declarationProvider = false
-    caps.documentHighlightProvider = false
-    caps.documentSymbolProvider = false
-    caps.workspaceSymbolProvider = false
-    caps.codeActionProvider = false
-    caps.completionProvider = nil
-    caps.signatureHelpProvider = nil
-    caps.codeLensProvider = nil
-    caps.documentFormattingProvider = false
-    caps.documentRangeFormattingProvider = false
-    caps.documentOnTypeFormattingProvider = nil
-    caps.foldingRangeProvider = false
-    caps.semanticTokensProvider = nil
-    caps.callHierarchyProvider = false
-    caps.inlayHintProvider = false
-    caps.inlineValueProvider = false
-    caps.linkedEditingRangeProvider = false
-    caps.documentColorProvider = false
-    caps.documentLinkProvider = nil
-    caps.monikerProvider = false
-    caps.selectionRangeProvider = false
-
-    -- Ignore diagnostics from Pyright so another tool (e.g. Ruff) can own them
-    client.handlers['textDocument/publishDiagnostics'] = function() end
-  end,
-  handlers = {
-    -- Also disable diagnostics at the config level
-    ['textDocument/publishDiagnostics'] = function() end,
-  },
-  settings = {
-    pyright = {
-      -- Using Ruff's import organizer
-      disableOrganizeImports = true,
-    },
-    python = {
-      analysis = {
-        -- Ignore all files for analysis to exclusively use Ruff for linting
-        ignore = { '*' },
-      },
-    },
-  },
-})
 vim.lsp.config('rust_analyzer', {
   capabilities = capabilities,
   settings = {
@@ -846,6 +790,7 @@ vim.keymap.set({ 'n', 'v' }, '<leader>hu', ':Gitsigns undo_stage_hunk<CR>', { de
 vim.keymap.set({ 'n', 'v' }, '<leader>hd', ':Gitsigns diffthis<CR>', { desc = 'git [d]iff against index' })
 vim.keymap.set({ 'n', 'v' }, '<leader>hp', ':Gitsigns preview_hunk<CR>', { desc = 'git [p]review hunk' })
 vim.keymap.set({ 'n', 'v' }, '<leader>hb', ':Gitsigns blame_line<CR>', { desc = 'git [b]lame line' })
+vim.keymap.set({ 'n', 'v' }, '<leader>hB', ':Gitsigns blame<CR>', { desc = 'git [B]lame file' })
 
 -- edit file under cursor
 vim.keymap.set('n', 'gf', ':edit <cfile><cr>', { desc = '[g]oto [f]ile' })
