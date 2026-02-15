@@ -353,7 +353,7 @@ require('lazy').setup {
       }
     end,
   },
-  -- make key-bindings easier to see
+  -- make key-bindings easier to see which whichkey
   {
     'https://github.com/folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
@@ -365,6 +365,7 @@ require('lazy').setup {
         { '<leader>b', group = '[B]uffer' },
         { '<leader>c', group = '[C]ode', mode = { 'n', 'x' } },
         { '<leader>d', group = '[D]ocument' },
+        { '<leader>d', group = '[O]rg mode' },
         { '<leader>r', group = '[R]ename' },
         { '<leader>s', group = '[S]earch' },
         { '<leader>w', group = '[W]orkspace' },
@@ -499,6 +500,15 @@ require('lazy').setup {
   },
   -- Detect tabstop and shiftwidth automatically
   'https://github.com/NMAC427/guess-indent.nvim',
+  -- org mode and todo
+  {
+    'nvim-orgmode/orgmode',
+    event = 'VeryLazy',
+    config = function()
+      -- Setup orgmode
+      require('orgmode').setup(require 'orgmode-config')
+    end,
+  },
   -- LSP Plugins
   {
     -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
@@ -562,6 +572,7 @@ vim.lsp.config('lua_ls', {
   },
 })
 vim.lsp.config('docker_compose_language_service', { capabilities = capabilities })
+vim.lsp.config('org', { capabilities = capabilities })
 
 vim.lsp.config(
   'ty',
@@ -830,6 +841,10 @@ vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find exis
 vim.keymap.set('n', '<leader>sn', function()
   builtin.find_files { cwd = vim.fn.stdpath 'config' }
 end, { desc = '[S]earch [N]eovim files' })
+
+vim.keymap.set('n', '<leader>sm', function()
+  builtin.find_files { cwd = '/Users/pratyush/Websites/mapl-soft-org' }
+end, { desc = '[S]earch [M]apl-soft files' })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
