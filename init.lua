@@ -778,6 +778,10 @@ vim.keymap.set('n', '<leader>oj', function()
   require('orgmode').action 'clock.org_clock_goto'
 end, { desc = '[O]rg [J]ump to active task' })
 
+vim.keymap.set('n', '<leader>oi', function()
+  require('orgmode').action('agenda.open_by_key', 'r')
+end, { desc = '[O]rg Refile [I]nbox' })
+
 -- ai codecompanion
 vim.keymap.set({ 'n', 'v' }, '<leader>aa', '<cmd>CodeCompanionActions<cr>', { noremap = true, silent = true, desc = '[A]ctions' })
 vim.keymap.set({ 'n', 'v' }, '<leader>ac', '<cmd>CodeCompanionChat<cr>', { noremap = true, silent = true, desc = '[C]hat' })
