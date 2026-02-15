@@ -2,6 +2,19 @@
 -- set it before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 
+local function org_clock_statusline()
+  if not _G.orgmode or type(_G.orgmode.statusline) ~= 'function' then
+    return ''
+  end
+
+  local ok, status = pcall(_G.orgmode.statusline)
+  if not ok then
+    return ''
+  end
+
+  return status
+end
+
 -- Lazy for plugins
 -- https://lazy.folke.io/installation
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -421,6 +434,14 @@ require('lazy').setup {
         -- https://github.com/nvim-lualine/lualine.nvim?tab=readme-ov-file#filename-component-options
         lualine_b = { { 'filename', path = 1 } },
         lualine_c = { 'diff', 'diagnostics' },
+        lualine_y = {
+          {
+            org_clock_statusline,
+            cond = function()
+              return org_clock_statusline() ~= ''
+            end,
+          },
+        },
         lualine_x = { 'filetype' },
       },
     },
@@ -745,6 +766,14 @@ vim.keymap.set('n', '<leader>bp', ':bp<CR>', { desc = '[B]uffer [P]revious' })
 vim.keymap.set('n', '<leader>bn', ':bn<CR>', { desc = '[B]uffer [N]ext' })
 vim.keymap.set('n', '<leader>bd', ':Bdelete<CR>', { desc = '[B]uffer [D]elete' })
 
+vim.keymap.set('n', '<leader>oxs', function()
+  local status = org_clock_statusline()
+  if status == '' then
+    return vim.notify('No active org clock.', vim.log.levels.INFO, { title = 'Org Active Clock' })
+  end
+  vim.notify(status, vim.log.levels.INFO, { title = 'Org Active Clock' })
+end, { desc = '[O]rg show active clock task' })
+
 -- ai codecompanion
 vim.keymap.set({ 'n', 'v' }, '<leader>aa', '<cmd>CodeCompanionActions<cr>', { noremap = true, silent = true, desc = '[A]ctions' })
 vim.keymap.set({ 'n', 'v' }, '<leader>ac', '<cmd>CodeCompanionChat<cr>', { noremap = true, silent = true, desc = '[C]hat' })
@@ -925,6 +954,27 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
   pattern = '*.jrnl',
   callback = function()
     vim.bo.filetype = 'markdown'
+  end,
+})
+
+vim.api.nvim_create_autocmd({ 'FileType', 'BufEnter' }, {
+  group = vim.api.nvim_create_augroup('org-agenda-active-clock', { clear = true }),
+  pattern = '*',
+  callback = function(event)
+    if vim.bo[event.buf].filetype ~= 'orgagenda' then
+      return
+    end
+
+    local status = org_clock_statusline()
+    local winid = vim.fn.bufwinid(event.buf)
+    if winid ~= -1 then
+      vim.wo[winid].winbar = status ~= '' and status or 'Org Agenda'
+    end
+
+    if status ~= '' and not vim.b[event.buf].org_active_clock_notified then
+      vim.b[event.buf].org_active_clock_notified = true
+      vim.notify(status, vim.log.levels.INFO, { title = 'Org Active Clock' })
+    end
   end,
 })
 
