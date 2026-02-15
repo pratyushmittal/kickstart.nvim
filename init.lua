@@ -365,7 +365,7 @@ require('lazy').setup {
         { '<leader>b', group = '[B]uffer' },
         { '<leader>c', group = '[C]ode', mode = { 'n', 'x' } },
         { '<leader>d', group = '[D]ocument' },
-        { '<leader>d', group = '[O]rg mode' },
+        { '<leader>o', group = '[O]rg mode' },
         { '<leader>r', group = '[R]ename' },
         { '<leader>s', group = '[S]earch' },
         { '<leader>w', group = '[W]orkspace' },
@@ -745,6 +745,39 @@ vim.keymap.set('n', '<leader>bp', ':bp<CR>', { desc = '[B]uffer [P]revious' })
 vim.keymap.set('n', '<leader>bn', ':bn<CR>', { desc = '[B]uffer [N]ext' })
 vim.keymap.set('n', '<leader>bd', ':Bdelete<CR>', { desc = '[B]uffer [D]elete' })
 
+local function get_active_org_clock_title()
+  local ok, orgmode = pcall(require, 'orgmode')
+  if not ok or not orgmode.files then
+    return nil
+  end
+
+  local headline = orgmode.files:get_clocked_headline()
+  if not headline then
+    return nil
+  end
+
+  local todo = headline:get_todo()
+  local title = headline:get_title()
+  local category = headline:get_category()
+  local todo_text = todo and (todo .. ' ') or ''
+  local category_text = category and category ~= '' and (' [' .. category .. ']') or ''
+
+  return string.format('%s%s%s', todo_text, title, category_text)
+end
+
+-- orgmode quick actions
+vim.keymap.set('n', '<leader>ow', function()
+  local active = get_active_org_clock_title()
+  if not active then
+    return vim.notify('No active Org clock', vim.log.levels.INFO, { title = 'Orgmode' })
+  end
+  vim.notify('Working on: ' .. active, vim.log.levels.INFO, { title = 'Orgmode' })
+end, { desc = '[O]rg [W]orking task' })
+
+vim.keymap.set('n', '<leader>oj', function()
+  require('orgmode').action 'clock.org_clock_goto'
+end, { desc = '[O]rg [J]ump to active task' })
+
 -- ai codecompanion
 vim.keymap.set({ 'n', 'v' }, '<leader>aa', '<cmd>CodeCompanionActions<cr>', { noremap = true, silent = true, desc = '[A]ctions' })
 vim.keymap.set({ 'n', 'v' }, '<leader>ac', '<cmd>CodeCompanionChat<cr>', { noremap = true, silent = true, desc = '[C]hat' })
@@ -898,6 +931,20 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
   callback = function()
     vim.hl.on_yank()
+  end,
+})
+
+-- show currently working on whenever we open agenda window
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'orgagenda',
+  callback = function()
+    local active = get_active_org_clock_title()
+    if not active then
+      return
+    end
+    vim.schedule(function()
+      vim.notify('Working on: ' .. active, vim.log.levels.INFO, { title = 'Org Agenda' })
+    end)
   end,
 })
 
