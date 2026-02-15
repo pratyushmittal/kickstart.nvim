@@ -1,12 +1,7 @@
-local BASE_TASK = [[* TODO %? :tags:
-DEADLINE: %U
-:LOGBOOK:
-CLOCK: %T
-:END:
-]]
+local BASE_TASK = [[* TODO %? :tags:]]
 
 local TASK_WITHOUT_TAGS = string.gsub(BASE_TASK, ':tags:', '')
-local TASK_SCREENER = string.gsub(BASE_TASK, ':tags:', ':%u:')
+local TASK_SCREENER = string.gsub(BASE_TASK, ':tags:', ':%%n:')
 local DEFAULT_REFILE_FILE = '~/Websites/orgfiles/refile.org'
 
 return {
