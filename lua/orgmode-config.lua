@@ -68,12 +68,12 @@ return {
     w = {
       description = 'Work Task',
       template = TASK_SCREENER,
-      target = '~/Websites/mapl-soft-org/orgfiles/tasks.org',
+      target = '~/Websites/mapl-soft-org/orgfiles/dev-tasks.org',
     },
     p = {
       description = 'Personal Task',
       template = TASK_WITHOUT_TAGS,
-      target = '~/Websites/orgfiles/tasks.org',
+      target = '~/Websites/orgfiles/personal-tasks.org',
     },
   },
 }
