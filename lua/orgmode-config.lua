@@ -20,6 +20,40 @@ return {
         },
       },
     },
+    T = {
+      description = 'All tasks',
+      types = {
+        {
+          type = 'tags_todo',
+          match = 'level>=1',
+          org_agenda_overriding_header = 'All tasks',
+          org_agenda_sorting_strategy = { 'priority-down', 'category-keep' },
+        },
+      },
+    },
+    ['2'] = {
+      description = 'Tasks with deadline in next 6 weeks',
+      types = {
+        {
+          type = 'tags_todo',
+          match = 'DEADLINE>="<today>"+DEADLINE<="<+6w>"',
+          org_agenda_overriding_header = 'Tasks with deadline in next 6 weeks',
+          org_agenda_sorting_strategy = { 'priority-down', 'category-keep' },
+        },
+      },
+    },
+    ['3'] = {
+      description = 'Tasks without deadline',
+      types = {
+        {
+          type = 'tags_todo',
+          match = 'level>=1',
+          org_agenda_todo_ignore_deadlines = 'all',
+          org_agenda_overriding_header = 'Tasks without deadline',
+          org_agenda_sorting_strategy = { 'priority-down', 'category-keep' },
+        },
+      },
+    },
   },
   mappings = {
     agenda = {

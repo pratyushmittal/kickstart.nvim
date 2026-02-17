@@ -507,6 +507,7 @@ require('lazy').setup {
     config = function()
       -- Setup orgmode
       require('orgmode').setup(require 'orgmode-config')
+      require('orgmode-patches').setup()
     end,
   },
   -- LSP Plugins
@@ -782,6 +783,10 @@ vim.keymap.set('n', '<leader>oi', function()
   require('orgmode').action('agenda.open_by_key', 'r')
 end, { desc = '[O]rg Refile [I]nbox' })
 
+vim.keymap.set('n', '<leader>ot', function()
+  require('orgmode-patches').open_task_view 'T'
+end, { desc = '[O]rg [T]asks' })
+
 -- ai codecompanion
 vim.keymap.set({ 'n', 'v' }, '<leader>aa', '<cmd>CodeCompanionActions<cr>', { noremap = true, silent = true, desc = '[A]ctions' })
 vim.keymap.set({ 'n', 'v' }, '<leader>ac', '<cmd>CodeCompanionChat<cr>', { noremap = true, silent = true, desc = '[C]hat' })
@@ -941,7 +946,21 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 -- show currently working on whenever we open agenda window
 vim.api.nvim_create_autocmd('FileType', {
   pattern = 'orgagenda',
-  callback = function()
+  callback = function(args)
+    local orgmode_patches = require 'orgmode-patches'
+    vim.keymap.set('n', '1', function()
+      orgmode_patches.open_task_view 'T'
+    end, { buffer = args.buf, silent = true, desc = 'Org tasks: clear filters' })
+    vim.keymap.set('n', '2', function()
+      orgmode_patches.open_task_view '2'
+    end, { buffer = args.buf, silent = true, desc = 'Org tasks: due in next 6 weeks' })
+    vim.keymap.set('n', '3', function()
+      orgmode_patches.open_task_view '3'
+    end, { buffer = args.buf, silent = true, desc = 'Org tasks: without deadline' })
+    vim.keymap.set('n', 'A', function()
+      orgmode_patches.add_current_task_to_today()
+    end, { buffer = args.buf, silent = true, desc = 'Org tasks: add to today agenda' })
+
     local active = get_active_org_clock_title()
     if not active then
       return
