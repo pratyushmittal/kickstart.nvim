@@ -507,7 +507,6 @@ require('lazy').setup {
     config = function()
       -- Setup orgmode
       require('orgmode').setup(require 'orgmode-config')
-      require('orgmode-patches').setup()
     end,
   },
   -- LSP Plugins
@@ -766,6 +765,34 @@ local function get_active_org_clock_title()
   return string.format('%s%s%s', todo_text, title, category_text)
 end
 
+local function open_org_task_view(key)
+  require('orgmode').action('agenda.open_by_key', key)
+end
+
+local function add_current_task_to_today_agenda()
+  local orgmode = require 'orgmode'
+  local Date = require 'orgmode.objects.date'
+  local headline = orgmode.agenda:get_headline_at_cursor()
+
+  if not headline then
+    return vim.notify('No agenda task selected', vim.log.levels.INFO, { title = 'Org Agenda' })
+  end
+
+  headline.file
+    :update(function()
+      return headline:set_deadline_date(Date.today())
+    end)
+    :next(function()
+      return orgmode.agenda:redo('mapping', true)
+    end)
+    :next(function()
+      vim.notify('Task deadline set to today', vim.log.levels.INFO, { title = 'Org Agenda' })
+    end)
+    :catch(function(err)
+      vim.notify('Failed to set deadline: ' .. tostring(err), vim.log.levels.ERROR, { title = 'Org Agenda' })
+    end)
+end
+
 -- orgmode quick actions
 vim.keymap.set('n', '<leader>ow', function()
   local active = get_active_org_clock_title()
@@ -784,7 +811,7 @@ vim.keymap.set('n', '<leader>oi', function()
 end, { desc = '[O]rg Refile [I]nbox' })
 
 vim.keymap.set('n', '<leader>ot', function()
-  require('orgmode-patches').open_task_view 'T'
+  open_org_task_view 'T'
 end, { desc = '[O]rg [T]asks' })
 
 -- ai codecompanion
@@ -947,18 +974,17 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 vim.api.nvim_create_autocmd('FileType', {
   pattern = 'orgagenda',
   callback = function(args)
-    local orgmode_patches = require 'orgmode-patches'
     vim.keymap.set('n', '1', function()
-      orgmode_patches.open_task_view 'T'
+      open_org_task_view 'T'
     end, { buffer = args.buf, silent = true, desc = 'Org tasks: clear filters' })
     vim.keymap.set('n', '2', function()
-      orgmode_patches.open_task_view '2'
+      open_org_task_view '2'
     end, { buffer = args.buf, silent = true, desc = 'Org tasks: due in next 6 weeks' })
     vim.keymap.set('n', '3', function()
-      orgmode_patches.open_task_view '3'
+      open_org_task_view '3'
     end, { buffer = args.buf, silent = true, desc = 'Org tasks: without deadline' })
     vim.keymap.set('n', 'A', function()
-      orgmode_patches.add_current_task_to_today()
+      add_current_task_to_today_agenda()
     end, { buffer = args.buf, silent = true, desc = 'Org tasks: add to today agenda' })
 
     local active = get_active_org_clock_title()
