@@ -765,10 +765,6 @@ local function get_active_org_clock_title()
   return string.format('%s%s%s', todo_text, title, category_text)
 end
 
-local function open_org_task_view(key)
-  require('orgmode').action('agenda.open_by_key', key)
-end
-
 local function add_current_task_to_today_agenda()
   local orgmode = require 'orgmode'
   local Date = require 'orgmode.objects.date'
@@ -811,7 +807,7 @@ vim.keymap.set('n', '<leader>oi', function()
 end, { desc = '[O]rg Refile [I]nbox' })
 
 vim.keymap.set('n', '<leader>ot', function()
-  open_org_task_view 'T'
+  require('orgmode').action('agenda.open_by_key', 'T')
 end, { desc = '[O]rg [T]asks' })
 
 -- ai codecompanion
@@ -975,13 +971,13 @@ vim.api.nvim_create_autocmd('FileType', {
   pattern = 'orgagenda',
   callback = function(args)
     vim.keymap.set('n', '1', function()
-      open_org_task_view 'T'
+      require('orgmode').action('agenda.open_by_key', 'T')
     end, { buffer = args.buf, silent = true, desc = 'Org tasks: clear filters' })
     vim.keymap.set('n', '2', function()
-      open_org_task_view '2'
+      require('orgmode').action('agenda.open_by_key', '2')
     end, { buffer = args.buf, silent = true, desc = 'Org tasks: due in next 6 weeks' })
     vim.keymap.set('n', '3', function()
-      open_org_task_view '3'
+      require('orgmode').action('agenda.open_by_key', '3')
     end, { buffer = args.buf, silent = true, desc = 'Org tasks: without deadline' })
     vim.keymap.set('n', 'A', function()
       add_current_task_to_today_agenda()
