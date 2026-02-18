@@ -68,7 +68,7 @@ return {
     w = {
       description = 'Work Task',
       template = TASK_SCREENER,
-      target = '~/Websites/mapl-soft-org/orgfiles/dev-tasks.org',
+      target = '~/Websites/mapl-soft-org/orgfiles/someday.org',
     },
     p = {
       description = 'Personal Task',
