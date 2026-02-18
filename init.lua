@@ -765,7 +765,7 @@ local function get_active_org_clock_title()
   return string.format('%s%s%s', todo_text, title, category_text)
 end
 
-local function add_current_task_to_today_agenda()
+local function toggle_current_task_today_deadline()
   local orgmode = require 'orgmode'
   local Date = require 'orgmode.objects.date'
   local headline = orgmode.agenda:get_headline_at_cursor()
@@ -774,18 +774,24 @@ local function add_current_task_to_today_agenda()
     return vim.notify('No agenda task selected', vim.log.levels.INFO, { title = 'Org Agenda' })
   end
 
+  local has_deadline = headline:get_deadline_date() ~= nil
+
   headline.file
     :update(function()
+      if has_deadline then
+        return headline:remove_deadline_date()
+      end
       return headline:set_deadline_date(Date.today())
     end)
     :next(function()
       return orgmode.agenda:redo('mapping', true)
     end)
     :next(function()
-      vim.notify('Task deadline set to today', vim.log.levels.INFO, { title = 'Org Agenda' })
+      local message = has_deadline and 'Task deadline removed' or 'Task deadline set to today'
+      vim.notify(message, vim.log.levels.INFO, { title = 'Org Agenda' })
     end)
     :catch(function(err)
-      vim.notify('Failed to set deadline: ' .. tostring(err), vim.log.levels.ERROR, { title = 'Org Agenda' })
+      vim.notify('Failed to toggle deadline: ' .. tostring(err), vim.log.levels.ERROR, { title = 'Org Agenda' })
     end)
 end
 
@@ -980,8 +986,8 @@ vim.api.nvim_create_autocmd('FileType', {
       require('orgmode').action('agenda.open_by_key', '3')
     end, { buffer = args.buf, silent = true, desc = 'Org tasks: without deadline' })
     vim.keymap.set('n', 'A', function()
-      add_current_task_to_today_agenda()
-    end, { buffer = args.buf, silent = true, desc = 'Org tasks: add to today agenda' })
+      toggle_current_task_today_deadline()
+    end, { buffer = args.buf, silent = true, desc = 'Org tasks: [A]dd/remove today deadline' })
 
     local active = get_active_org_clock_title()
     if not active then
