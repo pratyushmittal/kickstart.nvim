@@ -84,16 +84,19 @@ return {
     t = {
       description = 'Task',
       template = TASK_WITHOUT_TAGS,
+      whole_file = true,
     },
     w = {
       description = 'Work Task',
       template = TASK_SCREENER,
       target = '~/Websites/mapl-soft-org/orgfiles/3.someday.org',
+      whole_file = true,
     },
     p = {
       description = 'Personal Task',
       template = TASK_WITHOUT_TAGS,
       target = '~/Websites/orgfiles/personal-tasks.org',
+      whole_file = true,
     },
   },
 }
