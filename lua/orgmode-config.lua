@@ -4,50 +4,70 @@ local TASK_WITHOUT_TAGS = string.gsub(BASE_TASK, ':tags:', '')
 local TASK_SCREENER = string.gsub(BASE_TASK, ':tags:', ':%%n:')
 local DEFAULT_REFILE_FILE = '~/Websites/orgfiles/refile.org'
 
+local TODAYS_AGENDA = {
+  type = 'agenda',
+  org_agenda_span = 'day',
+  org_agenda_overriding_header = 'Today (schedule/deadline)',
+}
+
 return {
   -- https://nvim-orgmode.github.io/configuration
   org_agenda_files = { '~/Websites/orgfiles/**/*', '~/Websites/mapl-soft-org/orgfiles/**/*' },
   org_default_notes_file = DEFAULT_REFILE_FILE,
+  -- https://nvim-orgmode.github.io/configuration#org_log_into_drawer
+  -- drawers are :DRAWERNAME:...:END: thing under headlines
+  org_log_into_drawer = 'LOGBOOK',
+  -- https://nvim-orgmode.github.io/configuration#org_agenda_custom_commands
   org_agenda_custom_commands = {
+    A = {
+      description = 'Done tasks without agenda',
+      types = {
+        TODAYS_AGENDA,
+        {
+          type = 'tags',
+          -- match tasks closed today which didn't have any schedule or deadline
+          match = 'closed&!(+SCHEDULED)&!(+DEADLINE)',
+          org_agenda_overriding_header = 'Done tasks without agenda',
+        },
+      },
+    },
     r = {
       description = 'Refile inbox (TODO)',
       types = {
         {
           type = 'tags_todo',
-          match = 'level>=1',
           org_agenda_files = { DEFAULT_REFILE_FILE },
           org_agenda_overriding_header = 'Refile inbox',
         },
       },
     },
-    T = {
-      description = 'All tasks',
-      types = {
-        {
-          type = 'tags_todo',
-          match = 'level>=1',
-          org_agenda_overriding_header = 'All tasks',
-        },
-      },
-    },
     ['2'] = {
-      description = 'Tasks with deadline in next 6 weeks',
+      description = 'Tasks in this cycle',
       types = {
+        TODAYS_AGENDA,
         {
           type = 'tags_todo',
-          match = 'DEADLINE>="<today>"+DEADLINE<="<+6w>"',
-          org_agenda_overriding_header = 'Tasks with deadline in next 6 weeks',
+          -- list of more actionable tasks available for pickup
+          org_agenda_category_filter_preset = '-Next Cycle -Someday',
+          org_agenda_overriding_header = 'Tasks in this cycle',
         },
       },
     },
     ['3'] = {
-      description = 'Tasks without deadline',
+      description = 'Tasks for later cycles',
       types = {
         {
           type = 'tags_todo',
-          match = 'level>=1',
-          org_agenda_todo_ignore_deadlines = 'all',
-          org_agenda_overriding_header = 'Tasks without deadline',
+          org_agenda_category_filter_preset = 'Next Cycle|Someday',
+          org_agenda_overriding_header = 'Tasks for later cycles',
+        },
+      },
+    },
+    e = {
+      description = 'Show everything',
+      types = {
+        {
+          type = 'tags',
         },
       },
     },
@@ -68,7 +88,7 @@ return {
     w = {
       description = 'Work Task',
       template = TASK_SCREENER,
-      target = '~/Websites/mapl-soft-org/orgfiles/someday.org',
+      target = '~/Websites/mapl-soft-org/orgfiles/3.someday.org',
     },
     p = {
       description = 'Personal Task',

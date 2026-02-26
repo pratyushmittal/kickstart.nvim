@@ -412,7 +412,7 @@ require('lazy').setup {
       'nvim-treesitter/nvim-treesitter',
     },
   },
-  -- Status line
+  -- statusline
   {
     'https://github.com/nvim-lualine/lualine.nvim',
     dependencies = { 'nvim-tree/nvim-web-devicons' },
@@ -507,6 +507,18 @@ require('lazy').setup {
     config = function()
       -- Setup orgmode
       require('orgmode').setup(require 'orgmode-config')
+    end,
+  },
+  {
+    'nvim-orgmode/telescope-orgmode.nvim',
+    event = 'VeryLazy',
+    dependencies = {
+      'nvim-orgmode/orgmode',
+      'nvim-telescope/telescope.nvim',
+    },
+    config = function()
+      require('telescope').load_extension 'orgmode'
+      vim.keymap.set('n', '<leader>so', require('telescope').extensions.orgmode.search_headings)
     end,
   },
   -- LSP Plugins
@@ -813,7 +825,7 @@ vim.keymap.set('n', '<leader>oi', function()
 end, { desc = '[O]rg Refile [I]nbox' })
 
 vim.keymap.set('n', '<leader>ot', function()
-  require('orgmode').action('agenda.open_by_key', 'T')
+  require('orgmode').action('agenda.open_by_key', 't')
 end, { desc = '[O]rg [T]asks' })
 
 -- ai codecompanion
@@ -977,7 +989,7 @@ vim.api.nvim_create_autocmd('FileType', {
   pattern = 'orgagenda',
   callback = function(args)
     vim.keymap.set('n', '1', function()
-      require('orgmode').action('agenda.open_by_key', 'T')
+      require('orgmode').action('agenda.open_by_key', 't')
     end, { buffer = args.buf, silent = true, desc = 'Org tasks: clear filters' })
     vim.keymap.set('n', '2', function()
       require('orgmode').action('agenda.open_by_key', '2')
