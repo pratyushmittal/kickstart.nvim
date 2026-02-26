@@ -585,6 +585,7 @@ vim.lsp.config('lua_ls', {
 })
 vim.lsp.config('docker_compose_language_service', { capabilities = capabilities })
 vim.lsp.config('org', { capabilities = capabilities })
+vim.lsp.enable 'org'
 
 vim.lsp.config(
   'ty',
