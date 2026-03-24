@@ -2,7 +2,7 @@ local BASE_TASK = [[* TODO %? :tags:]]
 
 local TASK_WITHOUT_TAGS = string.gsub(BASE_TASK, ':tags:', '')
 local TASK_SCREENER = string.gsub(BASE_TASK, ':tags:', ':%%n:')
-local DEFAULT_REFILE_FILE = '~/Websites/orgfiles/refile.org'
+local DEFAULT_REFILE_FILE = '~/Websites/personal/orgfiles/refile.org'
 
 local TODAYS_AGENDA = {
   type = 'agenda',
@@ -12,7 +12,7 @@ local TODAYS_AGENDA = {
 
 return {
   -- https://nvim-orgmode.github.io/configuration
-  org_agenda_files = { '~/Websites/orgfiles/**/*', '~/Websites/mapl-soft-org/orgfiles/**/*' },
+  org_agenda_files = { '~/Websites/personal/orgfiles/**/*', '~/Websites/mapl-soft-org/orgfiles/**/*' },
   org_default_notes_file = DEFAULT_REFILE_FILE,
   -- https://nvim-orgmode.github.io/configuration#org_log_into_drawer
   -- drawers are :DRAWERNAME:...:END: thing under headlines
@@ -47,8 +47,8 @@ return {
         TODAYS_AGENDA,
         {
           type = 'tags_todo',
-          -- list of more actionable tasks available for pickup
-          org_agenda_category_filter_preset = '-Next Cycle -Someday',
+          -- use file tags so per-project CATEGORY values don't affect cycle filtering
+          org_agenda_tag_filter_preset = 'this_cycle',
           org_agenda_overriding_header = 'Tasks in this cycle',
         },
       },
@@ -58,7 +58,7 @@ return {
       types = {
         {
           type = 'tags_todo',
-          org_agenda_category_filter_preset = 'Next Cycle|Someday',
+          org_agenda_tag_filter_preset = 'next_cycle|someday',
           org_agenda_overriding_header = 'Tasks for later cycles',
         },
       },
@@ -95,7 +95,7 @@ return {
     p = {
       description = 'Personal Task',
       template = TASK_WITHOUT_TAGS,
-      target = '~/Websites/orgfiles/personal-tasks.org',
+      target = '~/Websites/personal/orgfiles/personal-tasks.org',
       whole_file = true,
     },
   },
