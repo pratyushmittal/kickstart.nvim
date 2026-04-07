@@ -60,10 +60,12 @@ require('lazy').setup {
     -- syntax highlighting
     -- https://github.com/nvim-treesitter/nvim-treesitter
     'nvim-treesitter/nvim-treesitter',
+    lazy = false,
     build = ':TSUpdate',
-    main = 'nvim-treesitter.configs', -- Sets main module to use for opts
-    opts = {
-      ensure_installed = {
+    branch = 'main',
+    config = function()
+      -- ensure basic parser are installed
+      local parsers = {
         'bash',
         'c',
         'comment',
@@ -80,41 +82,58 @@ require('lazy').setup {
         'vimdoc',
         'python',
         'elixir',
-      },
-      -- Auto Install languages that are not installed
-      auto_install = true,
-      highlight = { enable = true },
-      indent = { enable = true },
-      -- https://github.com/RRethy/nvim-treesitter-endwise extension
-      endwise = { enable = true },
-      -- incremental selection
-      incremental_selection = {
-        enable = true,
-        keymaps = {
-          init_selection = 's',
-          node_incremental = 's',
-          node_decremental = 'S',
-        },
-      },
-      textobjects = {
-        move = {
-          enable = true,
-          set_jumps = true, -- whether to set jumps in the jumplist
-          goto_next_start = {
-            [']c'] = '@class.outer',
-            -- https://github.com/nvim-treesitter/nvim-treesitter-textobjects?tab=readme-ov-file#built-in-textobjects
-            -- ["]]"] = "@function.outer",
-          },
-          goto_previous_start = {
-            -- ["[["] = "@function.outer",
-            ['[c'] = '@class.outer',
-          },
-        },
-      },
-    },
+      }
+      require('nvim-treesitter').install(parsers)
+
+      ---@param buf integer
+      ---@param language string
+      local function treesitter_try_attach(buf, language)
+        -- check if parser exists and load it
+        if not vim.treesitter.language.add(language) then
+          return
+        end
+        -- enables syntax highlighting and other treesitter features
+        vim.treesitter.start(buf, language)
+
+        -- enables treesitter based folds
+        -- for more info on folds see `:help folds`
+        vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+        vim.wo.foldmethod = 'expr'
+
+        -- enables treesitter based indentation
+        vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+      end
+
+      local available_parsers = require('nvim-treesitter').get_available()
+      vim.api.nvim_create_autocmd('FileType', {
+        callback = function(args)
+          local buf, filetype = args.buf, args.match
+
+          local language = vim.treesitter.language.get_lang(filetype)
+          if not language then
+            return
+          end
+
+          local installed_parsers = require('nvim-treesitter').get_installed 'parsers'
+
+          if vim.tbl_contains(installed_parsers, language) then
+            -- enable the parser if it is installed
+            treesitter_try_attach(buf, language)
+          elseif vim.tbl_contains(available_parsers, language) then
+            -- if a parser is available in `nvim-treesitter` auto install it, and enable it after the installation is done
+            require('nvim-treesitter').install(language):await(function()
+              treesitter_try_attach(buf, language)
+            end)
+          else
+            -- try to enable treesitter features in case the parser exists but is not available from `nvim-treesitter`
+            treesitter_try_attach(buf, language)
+          end
+        end,
+      })
+    end,
   },
   -- show current method or class name when scrolling
-  { 'nvim-treesitter/nvim-treesitter-context', opts = { max_lines = 2 } },
+  -- { 'nvim-treesitter/nvim-treesitter-context', opts = { max_lines = 2 } },
   -- use mason to install and manage linters, LSPs, DAPs and formatters for vim's LSP
   -- vim's lsp doesn't automatically install these, nor does it provide a way to install these
   {
@@ -299,7 +318,7 @@ require('lazy').setup {
   'https://github.com/RRethy/nvim-treesitter-endwise',
   -- configure jumps on [[, ]], ]m, [m - for all languages
   -- configured via textobjects in treesitter
-  'nvim-treesitter/nvim-treesitter-textobjects',
+  -- 'nvim-treesitter/nvim-treesitter-textobjects',
   -- auto close tags in html
   { 'https://github.com/windwp/nvim-ts-autotag', opts = {} },
   -- multi cursor
