@@ -202,6 +202,20 @@ vim.o.statusline = '%f %{v:lua.require("faltoo").status()}%m%r%h%w%=%-14.(%l,%c%
 vim.cmd('Faltoo on')
 
 -- LSP
+vim.lsp.config('lua_ls', {
+  cmd = { 'lua-language-server' },
+  filetypes = { 'lua' },
+  root_markers = { '.luarc.json', '.luarc.jsonc', '.stylua.toml', 'stylua.toml', '.git' },
+  completion = {
+    callSnippet = 'Replace',
+  },
+  settings = {
+    Lua = {
+      diagnostics = { globals = { 'vim' } },
+    },
+  },
+})
+
 vim.lsp.config('ruff', {
   cmd = { 'ruff', 'server' },
   filetypes = { 'python' },
@@ -240,4 +254,4 @@ vim.lsp.config('rust_analyzer', {
   },
 })
 
-vim.lsp.enable({ 'ruff', 'ty', 'rust_analyzer' })
+vim.lsp.enable({ 'lua_ls', 'ruff', 'ty', 'rust_analyzer' })
