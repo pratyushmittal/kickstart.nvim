@@ -47,18 +47,39 @@ vim.o.timeoutlen = 300 -- Shorten mapped-key sequence wait time.
 
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
--- Quickfix
+-- Diagnostics and quickfix
+vim.diagnostic.config({
+  jump = {
+    on_jump = function(diagnostic, bufnr)
+      if not diagnostic then
+        -- Guard because there may be no diagnostic after a jump attempt.
+        return
+      end
+
+      -- Show the diagnostic message for the location we just jumped to.
+      vim.diagnostic.open_float({ bufnr = bufnr, focus = false, scope = 'cursor' })
+    end,
+  },
+})
+
 vim.keymap.set('n', ']q', '<cmd>cnext<CR>', { desc = 'Next quickfix item' })
 vim.keymap.set('n', '[q', '<cmd>cprev<CR>', { desc = 'Previous quickfix item' })
 vim.keymap.set('n', '<leader>q', function()
   local winid = vim.fn.getqflist({ winid = 0 }).winid
 
-  if winid == 0 then
-    vim.cmd.copen()
-  else
+  if winid ~= 0 then
     vim.cmd.cclose()
+    return
   end
-end, { desc = 'Toggle quickfix' })
+
+  if #vim.diagnostic.get() == 0 then
+    -- Guard because opening an empty quickfix window is confusing.
+    vim.notify('No diagnostics')
+    return
+  end
+
+  vim.diagnostic.setqflist({ open = true })
+end, { desc = 'Toggle diagnostics quickfix' })
 
 vim.api.nvim_create_autocmd('FileType', {
   pattern = 'qf',
@@ -212,12 +233,6 @@ vim.keymap.set('v', '<leader>p', '"+p', { desc = 'Paste from system clipboard' }
 vim.g.faltoo_python_bin = '/Users/pratyush/.local/bin/faltoobot'
 vim.opt.runtimepath:prepend('/Users/pratyush/Websites/faltoo.nvim')
 require('faltoo').setup()
-vim.keymap.set({ 'n', 'x' }, '<leader>c', '<cmd>Faltoo comment<cr>', { desc = 'Faltoo line comment' })
-vim.keymap.set({ 'n', 'x' }, '<leader>C', '<cmd>Faltoo file-comment<cr>', { desc = 'Faltoo file comment' })
-vim.keymap.set('n', '<leader>ff', '<cmd>Faltoo history<cr>', { desc = 'Faltoo history' })
-vim.keymap.set('n', '<leader>fa', '<cmd>Faltoo ask<cr>', { desc = 'Ask AI' })
-vim.keymap.set('n', '<S-CR>', '<cmd>Faltoo submit<cr>', { desc = 'Faltoo submit' })
-vim.keymap.set('n', 'R', '<cmd>Faltoo open-unstaged<cr>', { desc = 'Faltoo open unstaged files' })
 
 -- statusline: file, Faltoo status, flags, and right aligned cursor position with file percent
 vim.o.statusline = '%f %{v:lua.require("faltoo").status()}%m%r%h%w%=%-14.(%l,%c%V%) %P'
