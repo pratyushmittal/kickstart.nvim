@@ -1,7 +1,6 @@
 local BASE_TASK = [[* TODO %? :tags:]]
 
 local TASK_WITHOUT_TAGS = string.gsub(BASE_TASK, ':tags:', '')
-local TASK_SCREENER = string.gsub(BASE_TASK, ':tags:', ':%%n:')
 local DEFAULT_REFILE_FILE = '~/Websites/personal/orgfiles/refile.org'
 
 local TODAYS_AGENDA = {
@@ -73,6 +72,11 @@ return {
     },
   },
   mappings = {
+    global = {
+      -- Disable default <leader>oa/<leader>oc because init.lua uses <leader>o directly.
+      org_agenda = false,
+      org_capture = false,
+    },
     agenda = {
       -- use m to move tasks
       org_agenda_refile = 'm',
@@ -84,18 +88,6 @@ return {
     t = {
       description = 'Task',
       template = TASK_WITHOUT_TAGS,
-      whole_file = true,
-    },
-    w = {
-      description = 'Work Task',
-      template = TASK_SCREENER,
-      target = '~/Websites/mapl-soft-org/orgfiles/3.someday.org',
-      whole_file = true,
-    },
-    p = {
-      description = 'Personal Task',
-      template = TASK_WITHOUT_TAGS,
-      target = '~/Websites/personal/orgfiles/personal-tasks.org',
       whole_file = true,
     },
   },
