@@ -80,6 +80,7 @@ vim.keymap.set('n', '<leader><leader>', telescope.buffers, { desc = 'Find existi
 vim.keymap.set('n', '<leader>sn', function()
   telescope.find_files({ cwd = vim.fn.stdpath('config') })
 end, { desc = '[S]earch [N]eovim files' })
+vim.keymap.set('n', 'gd', telescope.lsp_definitions, { desc = '[G]oto [D]efinition' })
 
 -- Orgmode
 require('orgmode').setup(require('orgmode-config'))
