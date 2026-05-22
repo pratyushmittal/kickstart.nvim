@@ -47,6 +47,26 @@ vim.o.timeoutlen = 300 -- Shorten mapped-key sequence wait time.
 
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
+-- Quickfix
+vim.keymap.set('n', ']q', '<cmd>cnext<CR>', { desc = 'Next quickfix item' })
+vim.keymap.set('n', '[q', '<cmd>cprev<CR>', { desc = 'Previous quickfix item' })
+vim.keymap.set('n', '<leader>q', function()
+  local winid = vim.fn.getqflist({ winid = 0 }).winid
+
+  if winid == 0 then
+    vim.cmd.copen()
+  else
+    vim.cmd.cclose()
+  end
+end, { desc = 'Toggle quickfix' })
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'qf',
+  callback = function(args)
+    vim.keymap.set('n', 'q', '<cmd>cclose<CR>', { buffer = args.buf, silent = true, desc = 'Close quickfix' })
+  end,
+})
+
 -- Buffers and windows
 vim.o.splitright = true -- Open vertical splits to the right.
 vim.o.splitbelow = true -- Open horizontal splits below.
@@ -81,6 +101,7 @@ vim.keymap.set('n', '<leader>sn', function()
   telescope.find_files({ cwd = vim.fn.stdpath('config') })
 end, { desc = '[S]earch [N]eovim files' })
 vim.keymap.set('n', 'gd', telescope.lsp_definitions, { desc = '[G]oto [D]efinition' })
+vim.keymap.set('n', 'grr', telescope.lsp_references, { desc = '[G]oto [R]eferences' })
 
 -- Orgmode
 require('orgmode').setup(require('orgmode-config'))
