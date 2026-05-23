@@ -30,6 +30,11 @@ require('mini.tabline').setup()
 require('which-key').setup()
 require('treesitter-context').setup({ max_lines = 2 })
 
+-- Folding
+vim.o.foldmethod = 'expr'
+vim.o.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+vim.o.foldlevelstart = 99
+
 -- Indentation guides
 vim.api.nvim_set_hl(0, 'IblIndent', { link = 'NonText' })
 require('ibl').setup({
@@ -230,7 +235,6 @@ vim.keymap.set('n', '<leader>P', '"+P', { desc = 'Paste from system clipboard be
 vim.keymap.set('v', '<leader>p', '"+p', { desc = 'Paste from system clipboard' })
 
 -- Faltoo
-vim.g.faltoo_python_bin = '/Users/pratyush/.local/bin/faltoobot'
 vim.opt.runtimepath:prepend('/Users/pratyush/Websites/faltoo.nvim')
 require('faltoo').setup()
 
