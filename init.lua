@@ -240,7 +240,6 @@ require('faltoo').setup()
 
 -- statusline: file, Faltoo status, flags, and right aligned cursor position with file percent
 vim.o.statusline = '%f %{v:lua.require("faltoo").status()}%m%r%h%w%=%-14.(%l,%c%V%) %P'
-vim.cmd('Faltoo on')
 
 -- LSP
 vim.lsp.config('lua_ls', {
