@@ -252,6 +252,12 @@ vim.lsp.config('lua_ls', {
   settings = {
     Lua = {
       diagnostics = { globals = { 'vim' } },
+      runtime = { version = 'LuaJIT' },
+      workspace = {
+        -- Load Neovim runtime files so lua_ls can show help for vim.* APIs.
+        library = vim.api.nvim_get_runtime_file('', true),
+        checkThirdParty = false,
+      },
     },
   },
 })
