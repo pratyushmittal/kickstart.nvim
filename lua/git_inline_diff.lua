@@ -1,5 +1,3 @@
----@alias GitInlineDiffDeletedLine string
-
 local M = {}
 
 local ns = vim.api.nvim_create_namespace('git-inline-diff')
@@ -7,17 +5,15 @@ local ns = vim.api.nvim_create_namespace('git-inline-diff')
 ---@type table<integer, boolean>
 local enabled = {}
 
----Clear inline diff virtual lines from a buffer.
 ---@param bufnr integer
 local function clear(bufnr)
   vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
   enabled[bufnr] = false
 end
 
----Run a git command and return stdout lines.
 ---@param args string[]
 ---@return string[]|nil
-local function git_lines(args)
+local function shell_lines(args)
   local result = vim.system(args, { text = true }):wait()
   if result.code ~= 0 then
     return nil
@@ -26,29 +22,39 @@ local function git_lines(args)
   return vim.split(vim.trim(result.stdout or ''), '\n', { trimempty = true })
 end
 
----Find the git repository root for a file.
----@param filename string
----@return string|nil
-local function git_root(filename)
+---@param bufnr integer
+---@return string[]|nil
+local function git_diff(bufnr)
+  local filename = vim.api.nvim_buf_get_name(bufnr)
+  if filename == '' then
+    -- Guard because unnamed buffers cannot be diffed with git.
+    vim.notify('No file for git diff', vim.log.levels.WARN)
+    return nil
+  end
+
   local dir = vim.fs.dirname(filename)
-  local lines = git_lines({ 'git', '-C', dir, 'rev-parse', '--show-toplevel' })
-  if not lines or not lines[1] then
+  local root = shell_lines({ 'git', '-C', dir, 'rev-parse', '--show-toplevel' })
+  if not root or not root[1] then
     -- Guard because diff preview only works inside a git repository.
     vim.notify('Not inside a git repository', vim.log.levels.WARN)
     return nil
   end
 
-  return lines[1]
+  local relpath = vim.fs.relpath(root[1], filename) or filename
+  return shell_lines({ 'git', '-C', root[1], 'diff', '--no-color', '--unified=0', '--', relpath })
 end
 
----Show deleted lines above their current-buffer anchor line.
 ---@param bufnr integer
----@param new_line integer
----@param deleted GitInlineDiffDeletedLine[]
-local function add_virtual_deleted_lines(bufnr, new_line, deleted)
+---@param line_number integer
+---@param deleted string[]
+---@param above boolean
+local function show_deleted(bufnr, line_number, deleted, above)
+  if #deleted == 0 then
+    return
+  end
+
   local line_count = vim.api.nvim_buf_line_count(bufnr)
-  local at_eof = new_line > line_count
-  local lnum = at_eof and line_count - 1 or math.max(new_line - 1, 0)
+  local lnum = math.min(math.max(line_number - 1, 0), line_count - 1)
   local virt_lines = {}
 
   for _, line in ipairs(deleted) do
@@ -57,51 +63,56 @@ local function add_virtual_deleted_lines(bufnr, new_line, deleted)
 
   vim.api.nvim_buf_set_extmark(bufnr, ns, lnum, 0, {
     virt_lines = virt_lines,
-    virt_lines_above = not at_eof,
+    virt_lines_above = above,
   })
 end
 
----Parse unified diff lines and render deleted lines in-place.
+---@param header string
+---@return integer line_number
+---@return boolean above
+local function parse_hunk_anchor(header)
+  local start, length = header:match('%+(%d+),?(%d*)')
+  local line_number = math.max(tonumber(start) or 1, 1)
+  local is_delete_only = tonumber(length) == 0
+
+  if is_delete_only and start ~= '0' then
+    return line_number, false
+  end
+
+  return line_number, true
+end
+
 ---@param bufnr integer
 ---@param diff string[]
----@return integer count
-local function show_deleted_lines(bufnr, diff)
-  local new_line = 1
-
-  ---@type GitInlineDiffDeletedLine[]
-  local deleted = {}
+---@return integer
+local function render_deleted_lines(bufnr, diff)
+  local line_number = 1
+  local above = true
   local count = 0
+  local deleted = {}
+  local in_hunk = false
 
-  ---Render and reset the current deleted-line group.
-  local function flush_deleted()
-    if #deleted == 0 then
-      -- Guard because most diff lines are context/additions, not deleted lines.
-      return
-    end
-
-    add_virtual_deleted_lines(bufnr, new_line, deleted)
+  local function flush()
+    -- Render collected deleted lines at the anchor from the current hunk header.
     count = count + #deleted
+    show_deleted(bufnr, line_number, deleted, above)
     deleted = {}
   end
 
   for _, line in ipairs(diff) do
     if vim.startswith(line, '@@') then
-      flush_deleted()
-      new_line = tonumber(line:match('%+(%d+)')) or 1
-    elseif vim.startswith(line, '-') and not vim.startswith(line, '---') then
+      -- Hunk header tells us where this hunk belongs in the current file.
+      flush()
+      in_hunk = true
+      line_number, above = parse_hunk_anchor(line)
+    elseif in_hunk and vim.startswith(line, '-') then
+      -- Deleted lines do not exist in the buffer, so collect and render them virtually.
+      -- We only parse inside hunks, so Lua comments like ---foo are not confused with diff headers.
       deleted[#deleted + 1] = line:sub(2)
-    elseif vim.startswith(line, '+') and not vim.startswith(line, '+++') then
-      flush_deleted()
-      new_line = new_line + 1
-    elseif vim.startswith(line, ' ') then
-      flush_deleted()
-      new_line = new_line + 1
-    else
-      flush_deleted()
     end
   end
 
-  flush_deleted()
+  flush()
   return count
 end
 
@@ -113,20 +124,7 @@ function M.toggle()
     return
   end
 
-  local filename = vim.api.nvim_buf_get_name(bufnr)
-  if filename == '' then
-    -- Guard because unnamed buffers cannot be diffed with git.
-    vim.notify('No file for git diff', vim.log.levels.WARN)
-    return
-  end
-
-  local root = git_root(filename)
-  if not root then
-    return
-  end
-
-  local relpath = vim.fs.relpath(root, filename) or filename
-  local diff = git_lines({ 'git', '-C', root, 'diff', '--no-color', '--unified=10', '--inter-hunk-context=10', '--', relpath })
+  local diff = git_diff(bufnr)
   if not diff or not diff[1] then
     -- Guard because the file may have no unstaged git changes.
     vim.notify('No unstaged diff')
@@ -134,7 +132,7 @@ function M.toggle()
   end
 
   clear(bufnr)
-  local count = show_deleted_lines(bufnr, diff)
+  local count = render_deleted_lines(bufnr, diff)
   enabled[bufnr] = count > 0
 
   if count == 0 then

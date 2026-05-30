@@ -227,6 +227,15 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
   end,
 })
 
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'lua',
+  callback = function(args)
+    local lua_sections = require('lua_sections')
+    vim.keymap.set('n', ']]', lua_sections.next_function, { buffer = args.buf, desc = 'Next Lua function' })
+    vim.keymap.set('n', '[[', lua_sections.previous_function, { buffer = args.buf, desc = 'Previous Lua function' })
+  end,
+})
+
 -- System clipboard
 vim.keymap.set({ 'n', 'v' }, '<leader>y', '"+y', { desc = 'Yank to system clipboard' })
 vim.keymap.set('n', '<leader>Y', '"+yy', { desc = 'Yank line to system clipboard' })
