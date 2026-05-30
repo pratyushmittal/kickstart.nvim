@@ -180,7 +180,7 @@ require('gitsigns').setup({
 
     vim.keymap.set('n', ']e', gitsigns.next_hunk, { buffer = bufnr, desc = 'Next git edit' })
     vim.keymap.set('n', '[e', gitsigns.prev_hunk, { buffer = bufnr, desc = 'Previous git edit' })
-    vim.keymap.set('n', 'm', gitsigns.toggle_deleted, { buffer = bufnr, desc = 'Toggle deleted lines' })
+    vim.keymap.set('n', 'm', require('git_inline_diff').toggle, { buffer = bufnr, desc = 'Toggle inline git diff' })
     vim.keymap.set('n', 's', function()
       local line = vim.fn.line('.')
       gitsigns.stage_hunk({ line, line })
