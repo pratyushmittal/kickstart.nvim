@@ -41,6 +41,8 @@ local function git_diff(bufnr)
   end
 
   local relpath = vim.fs.relpath(root[1], filename) or filename
+  -- -C runs from repo root, --no-color keeps parsing simple, --unified=0 removes context lines,
+  -- and -- stops file names from being interpreted as git options.
   return shell_lines({ 'git', '-C', root[1], 'diff', '--no-color', '--unified=0', '--', relpath })
 end
 
