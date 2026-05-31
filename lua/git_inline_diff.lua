@@ -118,17 +118,12 @@ local function render_deleted_lines(bufnr, diff)
   return count
 end
 
----Toggle same-buffer deleted-line preview for the current file's unstaged diff.
-function M.toggle()
-  local bufnr = vim.api.nvim_get_current_buf()
-  if enabled[bufnr] then
-    clear(bufnr)
-    return
-  end
-
+---@param bufnr integer
+local function show(bufnr)
   local diff = git_diff(bufnr)
   if not diff or not diff[1] then
     -- Guard because the file may have no unstaged git changes.
+    clear(bufnr)
     vim.notify('No unstaged diff')
     return
   end
@@ -141,6 +136,27 @@ function M.toggle()
     -- Guard because a diff can contain only additions.
     vim.notify('No deleted lines in unstaged diff')
   end
+end
+
+---Refresh the preview if it is currently visible for a buffer.
+---@param bufnr integer
+function M.refresh(bufnr)
+  if not enabled[bufnr] then
+    return
+  end
+
+  show(bufnr)
+end
+
+---Toggle same-buffer deleted-line preview for the current file's unstaged diff.
+function M.toggle()
+  local bufnr = vim.api.nvim_get_current_buf()
+  if enabled[bufnr] then
+    clear(bufnr)
+    return
+  end
+
+  show(bufnr)
 end
 
 return M

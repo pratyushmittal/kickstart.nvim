@@ -106,13 +106,22 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 
 -- Toggle between one full window and a vertical split.
 vim.keymap.set('n', 'O', function()
-  -- If there is only one window, open a vertical split.
-  if vim.fn.winnr() < 2 then
-    vim.cmd 'vsp'
-  else
-    vim.cmd 'only'
+  if vim.bo.buftype == 'nofile' then
+    -- Guard because modals use nofile buffers and should keep normal O behavior.
+    return 'O'
   end
-end, { desc = 'Make current window [F]ull, or split if only one' })
+
+  vim.schedule(function()
+    -- If there is only one window, open a vertical split.
+    if vim.fn.winnr() < 2 then
+      vim.cmd 'vsp'
+    else
+      vim.cmd 'only'
+    end
+  end)
+
+  return ''
+end, { expr = true, desc = 'Make current window [F]ull, or split if only one' })
 
 -- Telescope
 local telescope = require('telescope.builtin')
@@ -180,23 +189,28 @@ require('gitsigns').setup({
 
     vim.keymap.set('n', ']e', gitsigns.next_hunk, { buffer = bufnr, desc = 'Next git edit' })
     vim.keymap.set('n', '[e', gitsigns.prev_hunk, { buffer = bufnr, desc = 'Previous git edit' })
-    vim.keymap.set('n', 'm', require('git_inline_diff').toggle, { buffer = bufnr, desc = 'Toggle inline git diff' })
+    local inline_diff = require('git_inline_diff')
+    local function refresh_inline_diff()
+      inline_diff.refresh(bufnr)
+    end
+
+    vim.keymap.set('n', 'm', inline_diff.toggle, { buffer = bufnr, desc = 'Toggle inline git diff' })
     vim.keymap.set('n', 's', function()
       local line = vim.fn.line('.')
-      gitsigns.stage_hunk({ line, line })
+      gitsigns.stage_hunk({ line, line }, nil, refresh_inline_diff)
     end, { buffer = bufnr, desc = 'Toggle stage current line' })
     vim.keymap.set('n', 'S', function()
       local actions = gitsigns.get_actions() or {}
 
       if actions.stage_hunk then
-        gitsigns.stage_buffer()
+        gitsigns.stage_buffer(refresh_inline_diff)
         return
       end
 
-      gitsigns.reset_buffer_index()
+      gitsigns.reset_buffer_index(refresh_inline_diff)
     end, { buffer = bufnr, desc = 'Toggle stage current file' })
     vim.keymap.set('v', 's', function()
-      gitsigns.stage_hunk({ vim.fn.line('.'), vim.fn.line('v') })
+      gitsigns.stage_hunk({ vim.fn.line('.'), vim.fn.line('v') }, nil, refresh_inline_diff)
     end, { buffer = bufnr, desc = 'Toggle stage selected hunk' })
   end,
 })
