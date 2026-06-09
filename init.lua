@@ -10,9 +10,10 @@ vim.pack.add({
   'https://github.com/nvim-orgmode/orgmode',
   'https://github.com/nvim-orgmode/telescope-orgmode.nvim',
   'https://github.com/folke/which-key.nvim',
-  'https://github.com/echasnovski/mini.nvim',
-  'https://github.com/lukas-reineke/indent-blankline.nvim',
+  'https://github.com/echasnovski/mini.nvim', -- Shows open buffers as tabs at the top.
+  'https://github.com/lukas-reineke/indent-blankline.nvim', -- Shows vertical indent lines inside code.
   'https://github.com/nvim-treesitter/nvim-treesitter-context',
+  'https://github.com/RRethy/vim-illuminate', -- Highlight other uses of the symbol under cursor.
 })
 
 -- UI
@@ -105,23 +106,14 @@ vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower win
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
 -- Toggle between one full window and a vertical split.
-vim.keymap.set('n', 'O', function()
-  if vim.bo.buftype == 'nofile' then
-    -- Guard because modals use nofile buffers and should keep normal O behavior.
-    return 'O'
+vim.keymap.set('n', '<leader>v', function()
+  -- If there is only one window, open a vertical split.
+  if vim.fn.winnr() < 2 then
+    vim.cmd 'vsp'
+  else
+    vim.cmd 'only'
   end
-
-  vim.schedule(function()
-    -- If there is only one window, open a vertical split.
-    if vim.fn.winnr() < 2 then
-      vim.cmd 'vsp'
-    else
-      vim.cmd 'only'
-    end
-  end)
-
-  return ''
-end, { expr = true, desc = 'Make current window [F]ull, or split if only one' })
+end, { desc = 'Toggle [V]ertical split/full window' })
 
 -- Telescope
 local telescope = require('telescope.builtin')
