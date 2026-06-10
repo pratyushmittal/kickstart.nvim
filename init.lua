@@ -269,8 +269,8 @@ vim.lsp.config('lua_ls', {
       diagnostics = { globals = { 'vim' } },
       runtime = { version = 'LuaJIT' },
       workspace = {
-        -- Load Neovim runtime files so lua_ls can show help for vim.* APIs.
-        library = vim.api.nvim_get_runtime_file('', true),
+        -- Only load Neovim's own runtime so plugin source wins over installed plugin copies.
+        library = { vim.env.VIMRUNTIME },
         checkThirdParty = false,
       },
     },
