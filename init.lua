@@ -114,6 +114,22 @@ vim.keymap.set('n', '<leader>v', function()
     vim.cmd 'only'
   end
 end, { desc = 'Toggle [V]ertical split/full window' })
+vim.keymap.set('n', 'M', function()
+  if vim.wo.diff then
+    for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+      local name = vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(win))
+      if vim.startswith(name, 'gitsigns://') then
+        -- Close gitsigns' generated base buffer when toggling diff off.
+        vim.api.nvim_win_close(win, true)
+      end
+    end
+
+    vim.cmd('diffoff!')
+    return
+  end
+
+  require('gitsigns').diffthis(nil, { vertical = true })
+end, { desc = 'Toggle previous file diff' })
 
 -- Telescope
 local telescope = require('telescope.builtin')
