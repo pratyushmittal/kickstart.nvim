@@ -7,6 +7,7 @@ vim.pack.add({
   'https://github.com/lewis6991/gitsigns.nvim',
   'https://github.com/nvim-lua/plenary.nvim',
   'https://github.com/nvim-telescope/telescope.nvim',
+  'https://github.com/stevearc/oil.nvim',
   'https://github.com/nvim-orgmode/orgmode',
   'https://github.com/nvim-orgmode/telescope-orgmode.nvim',
   'https://github.com/folke/which-key.nvim',
@@ -29,6 +30,7 @@ vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
 require('mini.tabline').setup()
 require('which-key').setup()
+require('oil').setup()
 require('treesitter-context').setup({ max_lines = 2 })
 
 -- Folding
@@ -52,6 +54,7 @@ vim.o.confirm = true -- Ask to save changed buffers instead of failing commands.
 vim.o.timeoutlen = 300 -- Shorten mapped-key sequence wait time.
 
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+vim.keymap.set('n', '-', '<cmd>Oil<CR>', { desc = 'Open parent directory' })
 
 -- Diagnostics and quickfix
 vim.diagnostic.config({
