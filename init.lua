@@ -33,6 +33,14 @@ require('which-key').setup()
 require('oil').setup()
 require('treesitter-context').setup({ max_lines = 2 })
 
+-- CoffeeShop mode hides text while working in public places.
+vim.api.nvim_create_user_command('CoffeeShopModeOn', function()
+  vim.cmd('syntax match CoffeeShop /[a-z]/ conceal cchar=• contains=NONE containedin=ALL')
+  vim.cmd('highlight default link CoffeeShop Normal')
+  vim.wo.conceallevel = 2
+  vim.wo.concealcursor = 'ni'
+end, { desc = 'Enable CoffeeShop mode' })
+
 -- Folding
 vim.o.foldmethod = 'expr'
 vim.o.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
@@ -55,6 +63,18 @@ vim.o.timeoutlen = 300 -- Shorten mapped-key sequence wait time.
 
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 vim.keymap.set('n', '-', '<cmd>Oil<CR>', { desc = 'Open parent directory' })
+
+-- Spell check stays off until explicitly toggled.
+vim.o.spelllang = 'en_gb'
+vim.o.spellsuggest = 'best,9' -- Show the 9 best suggestions first in z=.
+local function toggle_spellcheck()
+  vim.wo.spell = not vim.wo.spell
+  vim.notify('Spellcheck ' .. (vim.wo.spell and 'on' or 'off'))
+end
+
+vim.api.nvim_create_user_command('SpellCheck', toggle_spellcheck, { desc = 'Toggle spellcheck' })
+vim.keymap.set('n', '<leader>ts', toggle_spellcheck, { desc = '[T]oggle [S]pellcheck' })
+-- Native spell keys after enabling: ]s/[s jump, z= suggestions, zg add, zw mark wrong, zug undo.
 
 -- Diagnostics and quickfix
 vim.diagnostic.config({

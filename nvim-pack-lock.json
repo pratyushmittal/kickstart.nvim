@@ -5,11 +5,11 @@
       "src": "https://github.com/f-person/auto-dark-mode.nvim"
     },
     "faltoo.nvim": {
-      "rev": "150e9e489208448dbca501da0b375af86d72108e",
+      "rev": "d3445e24cd3429082f92a1cde2076469d3385583",
       "src": "https://github.com/pratyushmittal/faltoo.nvim"
     },
     "gitsigns.nvim": {
-      "rev": "25050e4ed39e628282831d4cbecb1850454ce915",
+      "rev": "2038c666bd9d8a0b7349a0b6ee00dc83104b9ecf",
       "src": "https://github.com/lewis6991/gitsigns.nvim"
     },
     "indent-blankline.nvim": {
@@ -21,7 +21,7 @@
       "src": "https://github.com/rebelot/kanagawa.nvim"
     },
     "mini.nvim": {
-      "rev": "a59a9b7fb0a42cbcf022938ee5f0724320b66f63",
+      "rev": "1599a473aa6f5290a5d740b1144846e6f0c3963d",
       "src": "https://github.com/echasnovski/mini.nvim"
     },
     "nvim-treesitter-context": {
@@ -33,7 +33,7 @@
       "src": "https://github.com/stevearc/oil.nvim"
     },
     "orgmode": {
-      "rev": "c8e3d6c42f22c5fb52e30f50fa7f5f962c577097",
+      "rev": "4f99b3780950370e49d6ab88d041b2afe4da2566",
       "src": "https://github.com/nvim-orgmode/orgmode"
     },
     "plenary.nvim": {
@@ -41,7 +41,7 @@
       "src": "https://github.com/nvim-lua/plenary.nvim"
     },
     "srcery-vim": {
-      "rev": "c7acaf66f7369cbae86b4b4596496a980da7c2b7",
+      "rev": "aefde677e461f03f2cbd9ef432769fb76d075bb9",
       "src": "https://github.com/srcery-colors/srcery-vim"
     },
     "telescope-orgmode.nvim": {
@@ -49,7 +49,7 @@
       "src": "https://github.com/nvim-orgmode/telescope-orgmode.nvim"
     },
     "telescope.nvim": {
-      "rev": "7d324792b7943e4aa16ad007212e6acc6f9fe335",
+      "rev": "427b576c16792edad01a92b89721d923c19ad60f",
       "src": "https://github.com/nvim-telescope/telescope.nvim"
     },
     "vague.nvim": {
