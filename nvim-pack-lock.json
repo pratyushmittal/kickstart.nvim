@@ -9,7 +9,7 @@
       "src": "https://github.com/pratyushmittal/faltoo.nvim"
     },
     "gitsigns.nvim": {
-      "rev": "2038c666bd9d8a0b7349a0b6ee00dc83104b9ecf",
+      "rev": "eb60cc7b94c46005237fd34170d76f3a089a90aa",
       "src": "https://github.com/lewis6991/gitsigns.nvim"
     },
     "indent-blankline.nvim": {
@@ -21,7 +21,7 @@
       "src": "https://github.com/rebelot/kanagawa.nvim"
     },
     "mini.nvim": {
-      "rev": "1599a473aa6f5290a5d740b1144846e6f0c3963d",
+      "rev": "fdc8b9701616863e44f7a7a0802cfe16bd866539",
       "src": "https://github.com/echasnovski/mini.nvim"
     },
     "nvim-treesitter-context": {
@@ -33,7 +33,7 @@
       "src": "https://github.com/stevearc/oil.nvim"
     },
     "orgmode": {
-      "rev": "4f99b3780950370e49d6ab88d041b2afe4da2566",
+      "rev": "f32a06d4b5399dad8bf0478c772bf6c513f02dcf",
       "src": "https://github.com/nvim-orgmode/orgmode"
     },
     "plenary.nvim": {
@@ -57,7 +57,7 @@
       "src": "https://github.com/vague2k/vague.nvim"
     },
     "vim-illuminate": {
-      "rev": "0d1e93684da00ab7c057410fecfc24f434698898",
+      "rev": "8629e6b2dfa8c66677b9d489eb02480cbcfa9599",
       "src": "https://github.com/RRethy/vim-illuminate"
     },
     "which-key.nvim": {

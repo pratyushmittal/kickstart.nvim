@@ -281,12 +281,8 @@ vim.api.nvim_create_autocmd('FileType', {
   end,
 })
 
--- System clipboard
-vim.keymap.set({ 'n', 'v' }, '<leader>y', '"+y', { desc = 'Yank to system clipboard' })
-vim.keymap.set('n', '<leader>Y', '"+yy', { desc = 'Yank line to system clipboard' })
-vim.keymap.set('n', '<leader>p', '"+p', { desc = 'Paste from system clipboard after cursor' })
-vim.keymap.set('n', '<leader>P', '"+P', { desc = 'Paste from system clipboard before cursor' })
-vim.keymap.set('v', '<leader>p', '"+p', { desc = 'Paste from system clipboard' })
+-- Use the system clipboard for normal yanks, deletes, and puts.
+vim.o.clipboard = 'unnamedplus'
 
 -- Faltoo
 vim.opt.runtimepath:prepend('/Users/pratyush/Websites/faltoo.nvim')
