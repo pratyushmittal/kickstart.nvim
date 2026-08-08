@@ -13,8 +13,10 @@ vim.pack.add({
   'https://github.com/folke/which-key.nvim',
   'https://github.com/echasnovski/mini.nvim', -- Shows open buffers as tabs at the top.
   'https://github.com/lukas-reineke/indent-blankline.nvim', -- Shows vertical indent lines inside code.
+  'https://github.com/nvim-treesitter/nvim-treesitter', -- Manages non-bundled parsers such as CSS; parsing itself is built into Neovim.
   'https://github.com/nvim-treesitter/nvim-treesitter-context',
   'https://github.com/RRethy/vim-illuminate', -- Highlight other uses of the symbol under cursor.
+  'https://github.com/Jezda1337/nvim-html-css', -- CSS class navigation from HTML templates.
 })
 
 -- UI
@@ -32,6 +34,27 @@ require('mini.tabline').setup()
 require('which-key').setup()
 require('oil').setup()
 require('treesitter-context').setup({ max_lines = 2 })
+
+if vim.api.nvim_get_runtime_file('parser/css.*', false)[1] == nil then
+  -- CSS navigation cannot start until its parser is installed.
+  require('nvim-treesitter').install({ 'css' }):wait(300000)
+end
+
+require('html-css').setup({
+  enable_on = { 'html', 'htmldjango' },
+})
+
+local html_css_actions = require('html_css_actions')
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'html', 'htmldjango' },
+  callback = function(args)
+    vim.opt_local.iskeyword:append('-')
+    vim.keymap.set('n', 'gd', html_css_actions.goto_definition, { buffer = args.buf, desc = 'Go to CSS definition' })
+    vim.keymap.set('n', 'K', html_css_actions.peek_definition, { buffer = args.buf, desc = 'Peek CSS definition' })
+    vim.keymap.set('n', 'grr', html_css_actions.find_references, { buffer = args.buf, desc = 'Find CSS class references' })
+  end,
+})
 
 -- CoffeeShop mode hides text while working in public places.
 vim.api.nvim_create_user_command('CoffeeShopModeOn', function()
@@ -333,6 +356,18 @@ vim.lsp.config('ty', {
   },
 })
 
+vim.lsp.config('denols', {
+  cmd = { 'deno', 'lsp' },
+  filetypes = { 'javascript', 'javascriptreact' },
+  root_markers = { 'deno.json', 'deno.jsonc', '.git' },
+  settings = {
+    deno = {
+      enable = true,
+      lint = false,
+    },
+  },
+})
+
 vim.lsp.config('rust_analyzer', {
   cmd = { 'rust-analyzer' },
   filetypes = { 'rust' },
@@ -350,4 +385,4 @@ vim.lsp.config('rust_analyzer', {
   },
 })
 
-vim.lsp.enable({ 'lua_ls', 'ruff', 'ty', 'rust_analyzer' })
+vim.lsp.enable({ 'lua_ls', 'ruff', 'ty', 'denols', 'rust_analyzer' })
