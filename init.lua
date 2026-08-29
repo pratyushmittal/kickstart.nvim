@@ -192,6 +192,15 @@ end, { desc = '[S]earch [N]eovim files' })
 vim.keymap.set('n', 'gd', telescope.lsp_definitions, { desc = '[G]oto [D]efinition' })
 vim.keymap.set('n', 'grr', telescope.lsp_references, { desc = '[G]oto [R]eferences' })
 
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'cucumber',
+  callback = function(args)
+    local cucumber_actions = require('cucumber_actions')
+    vim.keymap.set('n', 'gd', cucumber_actions.goto_definition, { buffer = args.buf, desc = 'Go to step definition' })
+    vim.keymap.set('n', 'K', cucumber_actions.peek_definition, { buffer = args.buf, desc = 'Peek step definition' })
+  end,
+})
+
 -- Orgmode
 require('orgmode').setup(require('orgmode-config'))
 require('telescope').load_extension('orgmode')
@@ -368,6 +377,24 @@ vim.lsp.config('denols', {
   },
 })
 
+vim.lsp.config('cucumber_language_server', {
+  cmd = function(dispatchers, config)
+    -- The server resolves discovered files from its process directory.
+    return vim.lsp.rpc.start({ 'cucumber-language-server', '--stdio' }, dispatchers, { cwd = config.root_dir })
+  end,
+  filetypes = { 'cucumber' },
+  root_markers = { '.git' },
+  handlers = {
+    ['textDocument/publishDiagnostics'] = require('cucumber_actions').publish_diagnostics,
+  },
+  settings = {
+    cucumber = {
+      features = { '**/tests/features/**/*.feature' },
+      glue = { '**/tests/**/*.py' },
+    },
+  },
+})
+
 vim.lsp.config('rust_analyzer', {
   cmd = { 'rust-analyzer' },
   filetypes = { 'rust' },
@@ -385,4 +412,4 @@ vim.lsp.config('rust_analyzer', {
   },
 })
 
-vim.lsp.enable({ 'lua_ls', 'ruff', 'ty', 'denols', 'rust_analyzer' })
+vim.lsp.enable({ 'lua_ls', 'ruff', 'ty', 'denols', 'cucumber_language_server', 'rust_analyzer' })
