@@ -1,12 +1,25 @@
 -- Leader
 vim.g.mapleader = ' '
 
+-- Build the native Telescope sorter only when installed or updated.
+vim.api.nvim_create_autocmd('PackChanged', {
+  group = vim.api.nvim_create_augroup('telescope-fzf-build', { clear = true }),
+  callback = function(event)
+    -- Other plugins and deletion events do not need a build.
+    if event.data.spec.name == 'telescope-fzf-native.nvim' and event.data.kind ~= 'delete' then
+      local result = vim.system({ 'make' }, { cwd = event.data.path, text = true }):wait()
+      assert(result.code == 0, result.stderr)
+    end
+  end,
+})
+
 -- Plugins
 vim.pack.add({
   'https://github.com/rebelot/kanagawa.nvim',
   'https://github.com/lewis6991/gitsigns.nvim',
   'https://github.com/nvim-lua/plenary.nvim',
   'https://github.com/nvim-telescope/telescope.nvim',
+  'https://github.com/nvim-telescope/telescope-fzf-native.nvim', -- Enables filters such as !migrations.
   'https://github.com/stevearc/oil.nvim',
   'https://github.com/nvim-orgmode/orgmode',
   'https://github.com/nvim-orgmode/telescope-orgmode.nvim',
@@ -178,6 +191,7 @@ vim.keymap.set('n', 'M', function()
 end, { desc = 'Toggle previous file diff' })
 
 -- Telescope
+require('telescope').load_extension('fzf')
 local telescope = require('telescope.builtin')
 vim.keymap.set('n', '<leader>sf', telescope.find_files, { desc = '[S]earch [F]iles' })
 vim.keymap.set('n', '<leader>sg', telescope.live_grep, { desc = '[S]earch by [G]rep' })
