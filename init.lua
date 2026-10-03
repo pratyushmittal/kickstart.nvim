@@ -196,6 +196,13 @@ local telescope = require('telescope.builtin')
 vim.keymap.set('n', '<leader>sf', telescope.find_files, { desc = '[S]earch [F]iles' })
 vim.keymap.set('n', '<leader>sg', telescope.live_grep, { desc = '[S]earch by [G]rep' })
 vim.keymap.set('n', '<leader>sc', telescope.git_status, { desc = '[S]earch [C]hanged files' })
+vim.keymap.set('n', '<leader>sC', function()
+  -- Unstaged only: worktree differs from index, plus untracked files
+  telescope.git_files({
+    prompt_title = 'Unstaged Files',
+    git_command = { 'git', 'ls-files', '--modified', '--others', '--exclude-standard', '--deduplicate' },
+  })
+end, { desc = '[S]earch unstaged [C]hanged files' })
 vim.keymap.set('n', '<leader>sh', telescope.help_tags, { desc = '[S]earch [H]elp' })
 vim.keymap.set('n', '<leader>sk', telescope.keymaps, { desc = '[S]earch [K]eymaps' })
 vim.keymap.set('n', '<leader>sr', telescope.resume, { desc = '[S]earch [R]esume' })
