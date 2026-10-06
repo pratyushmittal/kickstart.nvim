@@ -339,7 +339,7 @@ vim.o.clipboard = 'unnamedplus'
 
 -- Faltoo
 vim.opt.runtimepath:prepend('/Users/pratyush/Websites/faltoo.nvim')
-require('faltoo').setup()
+require('faltoo').setup({ backend = "claude" })
 
 -- statusline: file, Faltoo status, flags, and right aligned cursor position with file percent
 vim.o.statusline = '%f %{v:lua.require("faltoo").status()}%m%r%h%w%=%-14.(%l,%c%V%) %P'
