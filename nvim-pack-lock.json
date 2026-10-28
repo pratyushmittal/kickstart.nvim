@@ -5,11 +5,11 @@
       "src": "https://github.com/f-person/auto-dark-mode.nvim"
     },
     "faltoo.nvim": {
-      "rev": "cebe9994c8537b5552f5197d3dd15115a09477e6",
+      "rev": "c9e69ae20c6e9c214b50c4408201f3ced830b56d",
       "src": "https://github.com/pratyushmittal/faltoo.nvim"
     },
     "gitsigns.nvim": {
-      "rev": "851a051e2bd2caba97e23314c68d69f1b1cf5d19",
+      "rev": "d4854fa9a94b5c8b37dd209fb4a19e98e764186f",
       "src": "https://github.com/lewis6991/gitsigns.nvim"
     },
     "indent-blankline.nvim": {
@@ -21,7 +21,7 @@
       "src": "https://github.com/rebelot/kanagawa.nvim"
     },
     "mini.nvim": {
-      "rev": "561751e839b99a4baca36b9d963166b66d2536a6",
+      "rev": "a03ad899bda446b5a81cfa99d8aeeb92241522f3",
       "src": "https://github.com/echasnovski/mini.nvim"
     },
     "nvim-html-css": {
@@ -29,19 +29,19 @@
       "src": "https://github.com/Jezda1337/nvim-html-css"
     },
     "nvim-treesitter": {
-      "rev": "910fdf6f49e9dee7e7257c7d11a76b040fdfb9de",
+      "rev": "a2f694478be07f89c2d03cc17858a8745a400c4b",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter"
     },
     "nvim-treesitter-context": {
-      "rev": "f3061339b8eaf9fda873600bc425b8d2d8502533",
+      "rev": "8decd73460d26ef0a0befb745d022dd1fc2c38b8",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter-context"
     },
     "oil.nvim": {
-      "rev": "b73018b75affd13fa38e2fc94ef753b465f770d7",
+      "rev": "d3733d933833a0e59b813ecec99341527adf0c28",
       "src": "https://github.com/stevearc/oil.nvim"
     },
     "orgmode": {
-      "rev": "3a3d115cedee657afc0a9ef1c24eab26ccfff6f6",
+      "rev": "61274cfda2cb5878f5587d4fab0429ec356d4ec8",
       "src": "https://github.com/nvim-orgmode/orgmode"
     },
     "plenary.nvim": {
@@ -49,7 +49,7 @@
       "src": "https://github.com/nvim-lua/plenary.nvim"
     },
     "srcery-vim": {
-      "rev": "ae584b8320c6e74bd37ca908e45026163c086628",
+      "rev": "a0cd1b23cc1b9b694fb1772d93e13f0307b063c1",
       "src": "https://github.com/srcery-colors/srcery-vim"
     },
     "telescope-fzf-native.nvim": {
@@ -65,7 +65,7 @@
       "src": "https://github.com/nvim-telescope/telescope.nvim"
     },
     "vague.nvim": {
-      "rev": "f9060fdaf7b20f68575d6f8214da6f1cf0c72825",
+      "rev": "73f8aaa866bf3d14dd0b0ab9e48c11794c1cb7ab",
       "src": "https://github.com/vague2k/vague.nvim"
     },
     "vim-illuminate": {

@@ -273,6 +273,12 @@ require('gitsigns').setup({
 
     vim.keymap.set('n', ']e', gitsigns.next_hunk, { buffer = bufnr, desc = 'Next git edit' })
     vim.keymap.set('n', '[e', gitsigns.prev_hunk, { buffer = bufnr, desc = 'Previous git edit' })
+    vim.keymap.set('n', ']E', function()
+      gitsigns.nav_hunk('next', { target = 'all' })
+    end, { buffer = bufnr, desc = 'Next git edit (staged + unstaged)' })
+    vim.keymap.set('n', '[E', function()
+      gitsigns.nav_hunk('prev', { target = 'all' })
+    end, { buffer = bufnr, desc = 'Previous git edit (staged + unstaged)' })
     local inline_diff = require('git_inline_diff')
     local function refresh_inline_diff()
       inline_diff.refresh(bufnr)
